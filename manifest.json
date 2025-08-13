@@ -1,0 +1,22 @@
+{
+  "short_name": "Kanae",
+  "name": "Kanae",
+  "description": "Aplicativo para treinamento de leitura em japonês",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "160x160"
+    },    
+    {
+      "src": "favicon_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3367D6",
+  "display": "fullscreen",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}

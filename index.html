@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prática de Japonês</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Prática de Japonês (日本語)</h1>
+            <button id="menu-toggle-btn" class="icon-button" aria-label="Abrir menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </header>
+
+        <main class="practice-area">
+            <div class="scoreboard">
+                <span>Pontos: <strong id="score-points">0</strong></span>
+                <span>Sequência: <strong id="streak-count">0</strong></span>
+            </div>
+
+            <div class="card">
+                <p id="question-display" class="question"></p>
+                <p id="meaning-display" class="meaning"></p>
+            </div>
+            
+            <div class="input-row">
+                <div id="answer-section-hiragana-to-romaji" class="answer-section">
+                    <input type="text" id="romaji-input" placeholder="Digite o Romaji..." autocomplete="off">
+                </div>
+                <button id="microphone-btn" class="icon-button"><span class="material-symbols-outlined">mic</span></button>
+                <button id="speaker-btn" class="icon-button"><span class="material-symbols-outlined">volume_up</span></button>
+            </div>
+
+            <div id="answer-section-romaji-to-hiragana" class="answer-section hidden">
+                <div class="options-grid">
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                </div>
+            </div>
+
+            <p id="feedback" class="feedback"></p>
+
+            <div class="action-buttons">
+                <button id="check-btn" class="ripple-effect">Verificar</button>
+                <button id="hint-btn" class="ripple-effect">Dica</button>
+                <button id="skip-btn" class="ripple-effect">Pular</button>
+            </div>
+        </main>
+    </div>
+
+    <div id="main-menu" class="dropdown-panel">
+        <div class="menu-group">
+            <div class="menu-group-title">Modo de Treino</div>
+            <div id="menu-mode-selection" class="mode-selection">
+                <button id="mode-hiragana-to-romaji" class="mode-btn active">Leitura → Romaji</button>
+                <button id="mode-romaji-to-hiragana" class="mode-btn">Romaji → Leitura</button>
+            </div>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-group">
+            <div class="menu-group-title">Filtros de Prática</div>
+            <div class="menu-toggles">
+				<label class="toggle-switch"><input type="checkbox" id="hiragana-filter" checked><span class="slider"></span><span class="switch-text">Hiragana</span></label>
+				<label class="toggle-switch"><input type="checkbox" id="katakana-filter" checked><span class="slider"></span><span class="switch-text">Katakana</span></label>
+				<label class="toggle-switch"><input type="checkbox" id="kanji-mode-toggle" checked><span class="slider"></span><span class="switch-text">Kanji</span></label>
+				<label class="toggle-switch"><input type="checkbox" id="furigana-mode-toggle" checked><span class="slider"></span><span class="switch-text">Furigana</span></label>
+            </div>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-group">
+             <button class="menu-item" data-panel-id="history-panel">
+                <span class="material-symbols-outlined">history</span> Histórico
+            </button>
+            <button class="menu-item" data-panel-id="hiragana-panel">
+                <span class="" style="font-size: 20px; font-weight: bold; width: 24px;">あ</span> Tabela Hiragana
+            </button>
+            <button class="menu-item" data-panel-id="katakana-panel">
+                <span class="" style="font-size: 20px; font-weight: bold; width: 24px;">ア</span> Tabela Katakana
+            </button>
+            <button class="menu-item" data-panel-id="settings-panel">
+                <span class="material-symbols-outlined">settings</span> Configurações
+            </button>
+        </div>
+    </div>
+
+    <div id="history-panel" class="side-panel">
+        <div class="panel-header">
+            <button class="panel-back-btn icon-button"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>Histórico</h2>
+        </div>
+        <div id="history-list-container" class="panel-content"></div>
+    </div>
+
+    <div id="hiragana-panel" class="side-panel">
+         <div class="panel-header">
+            <button class="panel-back-btn icon-button"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>Tabela Hiragana</h2>
+        </div>
+        <div class="panel-content kana-tables">
+		
+			<!-- Gojuon -->
+			<table class="kana-table">
+				<tr><th colspan="6">Gojuon</th></tr>
+				<tr>
+					<th></th><th>a</th><th>i</th><th>u</th><th>e</th><th>o</th>
+				</tr>
+				<tr><th></th><td>あ<br>a</td><td>い<br>i</td><td>う<br>u</td><td>え<br>e</td><td>お<br>o</td></tr>
+				<tr><th>k</th><td>か<br>ka</td><td>き<br>ki</td><td>く<br>ku</td><td>け<br>ke</td><td>こ<br>ko</td></tr>
+				<tr><th>s</th><td>さ<br>sa</td><td>し<br>shi</td><td>す<br>su</td><td>せ<br>se</td><td>そ<br>so</td></tr>
+				<tr><th>t</th><td>た<br>ta</td><td>ち<br>chi</td><td>つ<br>tsu</td><td>て<br>te</td><td>と<br>to</td></tr>
+				<tr><th>n</th><td>な<br>na</td><td>に<br>ni</td><td>ぬ<br>nu</td><td>ね<br>ne</td><td>の<br>no</td></tr>
+				<tr><th>h</th><td>は<br>ha</td><td>ひ<br>hi</td><td>ふ<br>fu</td><td>へ<br>he</td><td>ほ<br>ho</td></tr>
+				<tr><th>m</th><td>ま<br>ma</td><td>み<br>mi</td><td>む<br>mu</td><td>め<br>me</td><td>も<br>mo</td></tr>
+				<tr><th>y</th><td>や<br>ya</td><td></td><td>ゆ<br>yu</td><td></td><td>よ<br>yo</td></tr>
+				<tr><th>r</th><td>ら<br>ra</td><td>り<br>ri</td><td>る<br>ru</td><td>れ<br>re</td><td>ろ<br>ro</td></tr>
+				<tr><th>w</th><td>わ<br>wa</td><td></td><td></td><td></td><td>を<br>wo</td></tr>
+				<tr><th>n</th><td colspan="5">ん<br>n</td></tr>
+			</table>
+
+			<!-- Dakuon -->
+			<table class="kana-table">
+				<tr><th colspan="6">Dakuon</th></tr>
+				<tr><th>g</th><td>が<br>ga</td><td>ぎ<br>gi</td><td>ぐ<br>gu</td><td>げ<br>ge</td><td>ご<br>go</td></tr>
+				<tr><th>z</th><td>ざ<br>za</td><td>じ<br>ji</td><td>ず<br>zu</td><td>ぜ<br>ze</td><td>ぞ<br>zo</td></tr>
+				<tr><th>d</th><td>だ<br>da</td><td>ぢ<br>ji</td><td>づ<br>zu</td><td>で<br>de</td><td>ど<br>do</td></tr>
+				<tr><th>b</th><td>ば<br>ba</td><td>び<br>bi</td><td>ぶ<br>bu</td><td>べ<br>be</td><td>ぼ<br>bo</td></tr>
+			</table>
+
+			<!-- Handakuon -->
+			<table class="kana-table">
+				<tr><th colspan="6">Handakuon</th></tr>
+				<tr><th>p</th><td>ぱ<br>pa</td><td>ぴ<br>pi</td><td>ぷ<br>pu</td><td>ぺ<br>pe</td><td>ぽ<br>po</td></tr>
+			</table>
+
+			<!-- Youon -->
+			<table class="kana-table">
+				<tr><th colspan="6">Youon</th></tr>
+				<tr><th>ky</th><td>きゃ<br>kya</td><td></td><td>きゅ<br>kyu</td><td></td><td>きょ<br>kyo</td></tr>
+				<tr><th>sh</th><td>しゃ<br>sha</td><td></td><td>しゅ<br>shu</td><td></td><td>しょ<br>sho</td></tr>
+				<tr><th>ch</th><td>ちゃ<br>cha</td><td></td><td>ちゅ<br>chu</td><td></td><td>ちょ<br>cho</td></tr>
+				<tr><th>ny</th><td>にゃ<br>nya</td><td></td><td>にゅ<br>nyu</td><td></td><td>にょ<br>nyo</td></tr>
+				<tr><th>hy</th><td>ひゃ<br>hya</td><td></td><td>ひゅ<br>hyu</td><td></td><td>ひょ<br>hyo</td></tr>
+				<tr><th>my</th><td>みゃ<br>mya</td><td></td><td>みゅ<br>myu</td><td></td><td>みょ<br>myo</td></tr>
+				<tr><th>ry</th><td>りゃ<br>rya</td><td></td><td>りゅ<br>ryu</td><td></td><td>りょ<br>ryo</td></tr>
+				<tr><th>gy</th><td>ぎゃ<br>gya</td><td></td><td>ぎゅ<br>gyu</td><td></td><td>ぎょ<br>gyo</td></tr>
+				<tr><th>j</th><td>じゃ<br>ja</td><td></td><td>じゅ<br>ju</td><td></td><td>じょ<br>jo</td></tr>
+				<tr><th>by</th><td>びゃ<br>bya</td><td></td><td>びゅ<br>byu</td><td></td><td>びょ<br>byo</td></tr>
+				<tr><th>py</th><td>ぴゃ<br>pya</td><td></td><td>ぴゅ<br>pyu</td><td></td><td>ぴょ<br>pyo</td></tr>
+			</table>			
+		
+        </div>
+    </div>
+
+    <div id="katakana-panel" class="side-panel">
+        <div class="panel-header">
+            <button class="panel-back-btn icon-button"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>Tabela Katakana</h2>
+        </div>
+        <div class="panel-content kana-tables">
+            </div>
+    </div>
+
+    <div id="settings-panel" class="side-panel">
+        <div class="panel-header">
+            <button class="panel-back-btn icon-button"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>Configurações</h2>
+        </div>
+        <div class="panel-content">
+            <p>Em construção...</p>
+        </div>
+    </div>
+
+    <script src="vocabulary2.js"></script>
+    <script src="script.js"></script>
+    <script src="ui-manager.js"></script> 
+</body>
+</html>
