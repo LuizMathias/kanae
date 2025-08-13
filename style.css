@@ -278,9 +278,18 @@ input:disabled~.switch-text{
 	align-items:center
 }
 
+.category-display {
+	width: 100%; /* Faz ocupar a linha inteira */
+	text-align: center; /* Alinha o texto à esquerda */
+	margin-top: 0; /* Espaçamento */
+	font-size:1.1rem;
+	font-weight: 500;
+	color: var(--hint-color);
+}
+
 .question{
 	font-family:var(--font-jp);
-	font-size:5rem;
+	font-size:4rem;
 	font-weight:700;
 	color:var(--dark-color);
 	line-height:1.2;
@@ -300,7 +309,7 @@ rt.hide-furigana{
 }
 
 .meaning{
-	font-size:1.2rem;
+	font-size:1.1rem;
 	color:var(--hint-color);
 	margin-top:10px;
 	font-weight:500;

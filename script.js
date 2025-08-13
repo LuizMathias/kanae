@@ -24,9 +24,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========================================================================
     // Junta todos os arrays de categorias do objeto 'vocabulary' em um único array plano.
     // O .filter(item => item.kana) remove os objetos de cabeçalho (ex: {category: '...'}).
+	/*
     const allWords = Object.values(vocabulary).flatMap(categoryArray =>
         categoryArray.filter(item => item.kana)
     );
+	*/
+
+    // ========================================================================
+    // NOVO: Processa a estrutura do vocabulário para incluir categorias
+    // ========================================================================
+    const allWords = Object.values(vocabulary).flatMap(categoryArray => {
+        // O primeiro item do array é o objeto da categoria, ex: { category: '...' }
+        const categoryName = categoryArray[0].category;
+
+        // Pega todos os outros itens (as palavras) do array
+        return categoryArray.slice(1).map(word => ({
+            ...word, // Copia todas as propriedades existentes da palavra
+            category: categoryName // E adiciona a nova propriedade 'category'
+        }));
+    });
+    // ========================================================================
+
     // ========================================================================
 	
 
@@ -173,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = document.getElementById('feedback');
     const scorePoints = document.getElementById('score-points');
     const streakCount = document.getElementById('streak-count');
+	const categoryDisplay = document.getElementById('category-display');
     const modeHiraganaToRomajiBtn = document.getElementById('mode-hiragana-to-romaji');
     const modeRomajiToHiraganaBtn = document.getElementById('mode-romaji-to-hiragana');
     const microphoneIcon = document.querySelector('#microphone-btn i');
@@ -308,11 +327,16 @@ document.addEventListener('DOMContentLoaded', () => {
             questionDisplay.innerHTML = 'Oops!';
             meaningDisplay.textContent = currentWord.meaning;
             meaningDisplay.style.visibility = 'visible';
+			categoryDisplay.textContent = ''; // Limpa a categoria em caso de erro
             feedback.textContent = '';
             toggleInputs(true);
             furiganaModeToggle.disabled = !kanjiModeToggle.checked;
             return;
         }
+
+        // NOVO: Exibe a categoria da palavra sorteada
+        categoryDisplay.textContent = `Categoria: ${currentWord.category || 'Geral'}`;
+
         feedback.textContent = '';
         meaningDisplay.style.visibility = 'hidden';
         meaningDisplay.textContent = '';
