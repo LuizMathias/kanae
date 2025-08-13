@@ -61,13 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // (outros elementos do DOM)
 	
 	romajiInput.addEventListener('blur', () => {
-		document.getElementById('inflate').style.height = '0';
+		//
 	});
 	
     romajiInput.addEventListener('focus', () => {
 		return;
         setTimeout(() => {
-			document.getElementById('inflate').style.height = '400px';
 
             const viewport = window.visualViewport;
             const rect = romajiInput.getBoundingClientRect();
@@ -335,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // NOVO: Exibe a categoria da palavra sorteada
-        categoryDisplay.textContent = `Categoria: ${currentWord.category || 'Geral'}`;
+        categoryDisplay.textContent = `${currentWord.category || 'Geral'}`;
 
         feedback.textContent = '';
         meaningDisplay.style.visibility = 'hidden';
@@ -461,9 +460,11 @@ document.addEventListener('DOMContentLoaded', () => {
         streak = 0;
         updateScore();
         if (newMode === 'hiragana-to-romaji') {
+			questionDisplay.classList.remove('romaji');
             modeHiraganaToRomajiBtn.classList.add('active');
             modeRomajiToHiraganaBtn.classList.remove('active');
         } else {
+			questionDisplay.classList.add('romaji');
             modeHiraganaToRomajiBtn.classList.remove('active');
             modeRomajiToHiraganaBtn.classList.add('active');
         }
@@ -590,4 +591,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
     }
+
+	window.addEventListener('load', function() {
+		const splash = document.getElementById('splash-screen');
+		if (splash) splash.style.display = 'none';
+	});	
+
 });
+

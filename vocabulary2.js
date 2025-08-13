@@ -751,7 +751,7 @@ const feelingsAndConditions = [
 
 // === Perguntas e Advérbios ===
 const questionsAndAdverbs = [
-	{ category: 'questionsAndAdverbs' },
+	{ category: 'Perguntas e Advérbios' },
     { kana: 'なに', kanji: '何', furigana: [{ position: 0, reading: 'なに' }], romaji: 'nani', meaning: 'O quê?' },
     { kana: 'なんですか', kanji: '何ですか', furigana: [{ position: 0, reading: 'なん' }], romaji: 'nan desu ka', meaning: 'O que é?' },
     { kana: 'だれ', kanji: '誰', furigana: [{ position: 0, reading: 'だれ' }], romaji: 'dare', meaning: 'Quem?' },

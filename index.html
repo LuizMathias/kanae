@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  	<link rel="manifest" href="/manifest.json">
+  	<link rel="manifest" href="manifest.json">
   	<meta name="theme-color" content="#3367D6">
   	<title>Kanae</title>	
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+	<div id="splash-screen" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:#3367D6;display:flex;align-items:center;justify-content:center;">
+		<h2>Kanae</h2>
+		<img src="favicon_512x512.png" alt="Logo" style="width:128px;height:128px;">
+	</div>
     <div class="container">
         <header>
             <h1>Prática de Japonês (日本語)</h1>
@@ -24,9 +27,8 @@
                 <span>Pontos: <strong id="score-points">0</strong></span>
                 <span>Sequência: <strong id="streak-count">0</strong></span>
             </div>
-
+			<p id="category-display" class="category-display"></p>
             <div class="card">
-				<p id="category-display" class="category-display"></p>
                 <p id="question-display" class="question"></p>
                 <p id="meaning-display" class="meaning"></p>
             </div>
@@ -181,7 +183,7 @@
     </div>
 
     <script src="vocabulary2.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?1"></script>
     <script src="ui-manager.js"></script> 
 </body>
 </html>

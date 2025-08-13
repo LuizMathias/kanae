@@ -269,7 +269,7 @@ input:disabled~.switch-text{
 	background-color:#fdfdfd;
 	border:2px solid #eee;
 	border-radius:10px;
-	padding:20px;
+	padding:20px 5px 5px 5px;
 	margin-bottom:10px;
 	min-height:180px;
 	display:flex;
@@ -281,8 +281,12 @@ input:disabled~.switch-text{
 .category-display {
 	width: 100%; /* Faz ocupar a linha inteira */
 	text-align: center; /* Alinha o texto à esquerda */
-	margin-top: 0; /* Espaçamento */
-	font-size:1.1rem;
+	position: relative;
+	height: 20px;
+    line-height: 20px;
+    margin-top: -15px;
+    top: 25px;
+	font-size:1.0rem;
 	font-weight: 500;
 	color: var(--hint-color);
 }
@@ -296,9 +300,14 @@ input:disabled~.switch-text{
 	word-break:break-word
 }
 
+.question.romaji {
+	font-size:3.5rem;
+	line-height: 1;
+}
+
 rt{
-	font-size:1.5rem;
-	color:#555;
+	font-size:45%;
+	/*color:#555;*/
 	user-select:none;
 	transition:opacity .3s,visibility .3s
 }
@@ -357,12 +366,13 @@ rt.hide-furigana{
 	background-color:#f0f0f0;
 	border:2px solid #ddd;
 	border-radius:10px;
-	padding:15px 10px;
+	padding:15px 5px;
 	font-family:var(--font-jp);
-	font-size:2.5rem;
+	font-size:1.8rem;
 	cursor:pointer;
 	transition:background-color .3s,border-color .3s;
-	line-height:1.2
+	line-height:1.2;
+	height: 105px;
 }
 
 .feedback{
