@@ -592,10 +592,5 @@ document.addEventListener('DOMContentLoaded', () => {
         questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
     }
 
-	window.addEventListener('load', function() {
-		const splash = document.getElementById('splash-screen');
-		if (splash) splash.style.display = 'none';
-	});	
-
 });
 
