@@ -75,10 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
 
-    // --- Inicialização ---
-    loadSettings();
-    applySettings();	
-
     // Listener do Tema Escuro
     darkModeToggle.addEventListener('change', () => {
         currentSettings.isDarkMode = darkModeToggle.checked;
@@ -137,6 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (app && typeof app.updateFuriganaVisibility === 'function') app.updateFuriganaVisibility();
     });
 
+
+    // --- Inicialização ---
+    loadSettings();
+    applySettings();
 });
 
 /**
