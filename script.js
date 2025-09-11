@@ -1,52 +1,53 @@
 // script.js
 var utterance = new SpeechSynthesisUtterance();
+let practiceHistory = [];
+let historyListContainer;
+
+function renderHistory() {
+	if (!historyListContainer) return;
+	historyListContainer.innerHTML = '';
+	if (practiceHistory.length === 0) {
+		historyListContainer.innerHTML = '<p style="color: #999;">Nenhuma palavra no histórico ainda.</p>';
+		return;
+	}
+	practiceHistory.forEach(item => {
+		const itemDiv = document.createElement('div');
+		itemDiv.className = `history-item ${item.status}`;
+		itemDiv.innerHTML = `
+			<div class="history-word">${item.word}</div>
+			<div class="history-label">Romaji:</div>
+			<div class="history-value">${item.romaji}</div>
+			<div class="history-label">Tradução:</div>
+			<div class="history-value">${item.meaning}</div>
+		`;
+		historyListContainer.appendChild(itemDiv);
+	});
+}
+
+function clearPracticeHistory() {
+    if (confirm('Você tem certeza que deseja limpar todo o seu histórico de prática?')) {
+        practiceHistory.length = 0; // Limpa o array
+        localStorage.removeItem('japanesePracticeHistory');
+        renderHistory(); // Re-renderiza a lista vazia
+        alert('Histórico de prática limpo com sucesso!');
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Variáveis Globais ---
+
+	//window.matchMedia('(display-mode: standalone)')
+
+    // --- Variáveis Globais de Estado da UI ---
     let currentWord = {};
     let score = 0;
     let streak = 0;
     let mode = 'hiragana-to-romaji';
-    let isAnswered = false;
-    let practiceHistory = []; // NOVO: Array para o histórico
-	
-    // ========================================================================
-    // NOVO: Carrega os efeitos sonoros
-    // ========================================================================
+    let isAnswered = false;    
+    let currentReviewState = {}; // Rastreia ajudas (dica, áudio)
+
+    // --- Efeitos Sonoros ---
     const correctSound = new Audio('sounds/correct.mp3');
     const errorSound = new Audio('sounds/error.mp3');
-    // Opcional: ajuste o volume se achar necessário (0.0 a 1.0)
-    // correctSound.volume = 0.5;
-    // errorSound.volume = 0.5;	
-	
-    // ========================================================================
-    // NOVO: Processa a nova estrutura do vocabulário
-    // ========================================================================
-    // Junta todos os arrays de categorias do objeto 'vocabulary' em um único array plano.
-    // O .filter(item => item.kana) remove os objetos de cabeçalho (ex: {category: '...'}).
-	/*
-    const allWords = Object.values(vocabulary).flatMap(categoryArray =>
-        categoryArray.filter(item => item.kana)
-    );
-	*/
-
-    // ========================================================================
-    // NOVO: Processa a estrutura do vocabulário para incluir categorias
-    // ========================================================================
-    const allWords = Object.values(vocabulary).flatMap(categoryArray => {
-        // O primeiro item do array é o objeto da categoria, ex: { category: '...' }
-        const categoryName = categoryArray[0].category;
-
-        // Pega todos os outros itens (as palavras) do array
-        return categoryArray.slice(1).map(word => ({
-            ...word, // Copia todas as propriedades existentes da palavra
-            category: categoryName // E adiciona a nova propriedade 'category'
-        }));
-    });
-    // ========================================================================
-
-    // ========================================================================
-	
 
     // --- Elementos do DOM ---
     const questionDisplay = document.getElementById('question-display');
@@ -55,39 +56,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkBtn = document.getElementById('check-btn');
     const speakerBtn = document.getElementById('speaker-btn');
     const microphoneBtn = document.getElementById('microphone-btn');
+    const optionButtons = document.querySelectorAll('.option-btn');
+    const skipBtn = document.getElementById('skip-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const feedback = document.getElementById('feedback');
+    const scorePoints = document.getElementById('score-points');
+    const streakCount = document.getElementById('streak-count');
+    const categoryDisplay = document.getElementById('category-display');
+    const modeHiraganaToRomajiBtn = document.getElementById('mode-hiragana-to-romaji');
+    const modeRomajiToHiraganaBtn = document.getElementById('mode-romaji-to-hiragana');
+    const microphoneIcon = document.querySelector('#microphone-btn i');
+    const hiraganaFilter = document.getElementById('hiragana-filter');
+    const katakanaFilter = document.getElementById('katakana-filter');
     const kanjiModeToggle = document.getElementById('kanji-mode-toggle');
     const furiganaModeToggle = document.getElementById('furigana-mode-toggle');
-    const historyListContainer = document.getElementById('history-list-container'); // NOVO
-    // (outros elementos do DOM)
-	
-	romajiInput.addEventListener('blur', () => {
-		//
-	});
-	
-    romajiInput.addEventListener('focus', () => {
-		return;
-        setTimeout(() => {
+	const showFuriganaBtn = document.getElementById('show-furigana-btn');
+    historyListContainer = document.getElementById('history-list-container');
+    
+    // --- Lógica de Configurações e Histórico ---
+    const settingsKey = 'japanesePracticeSettings';
 
-            const viewport = window.visualViewport;
-            const rect = romajiInput.getBoundingClientRect();
+    function saveSettings_old() {
+        const settings = {
+            practiceHiragana: hiraganaFilter.checked,
+            practiceKatakana: katakanaFilter.checked,
+            practiceKanji: kanjiModeToggle.checked,
+            showFurigana: furiganaModeToggle.checked,
+            gameMode: mode
+        };
+        localStorage.setItem(settingsKey, JSON.stringify(settings));
+    }
 
-            // Calcula a posição que deixa o input encostado no teclado
-			
-            var targetScroll = window.scrollY + rect.top - (viewport.height - rect.height - 10);
-			//targetScroll = viewport.height*-1;
-			romajiInput.value = targetScroll;
-            window.scrollTo({
-                top: targetScroll,
-                behavior: 'instant'
-            });
-			
-        }, 300); // espera o teclado abrir
-    });	
-	
+    function loadSettings_old() {
+        const savedSettings = localStorage.getItem(settingsKey);
+        if (savedSettings) {
+            const loaded = JSON.parse(savedSettings);
+            hiraganaFilter.checked = loaded.practiceHiragana;
+            katakanaFilter.checked = loaded.practiceKatakana;
+            kanjiModeToggle.checked = loaded.practiceKanji;
+            furiganaModeToggle.checked = loaded.showFurigana;
+            mode = loaded.gameMode || 'hiragana-to-romaji';
+        }
+    }
 
-    // --- LÓGICA DO HISTÓRICO ---
-
-    // NOVO: Carrega o histórico do localStorage quando a página abre
     function loadHistory() {
         const savedHistory = localStorage.getItem('japanesePracticeHistory');
         if (savedHistory) {
@@ -96,184 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
         renderHistory();
     }
 
-    // NOVO: Salva o histórico no localStorage
     function saveHistory() {
         localStorage.setItem('japanesePracticeHistory', JSON.stringify(practiceHistory));
     }
 
-    // NOVO: Adiciona um item ao histórico
     function addToHistory(word, wasCorrect) {
         const historyEntry = {
-            word: getDisplayWord(word), // Pega a palavra com ou sem furigana
+            word: getDisplayWord(word),
             status: wasCorrect ? 'correct' : 'incorrect',
             romaji: word.romaji,
             meaning: word.meaning,
             timestamp: new Date().getTime()
         };
-
-        // Adiciona o novo registro no início do array
         practiceHistory.unshift(historyEntry);
-
-        // Limita o histórico aos últimos 100 itens para não sobrecarregar
         if (practiceHistory.length > 100) {
             practiceHistory.pop();
         }
-
         saveHistory();
         renderHistory();
     }
 
-    // NOVO: Renderiza a lista de histórico no painel
-    function renderHistory() {
-        if (!historyListContainer) return;
-
-        historyListContainer.innerHTML = ''; // Limpa a lista atual
-
-        if (practiceHistory.length === 0) {
-            historyListContainer.innerHTML = '<p style="color: #999;">Nenhuma palavra no histórico ainda.</p>';
-            return;
-        }
-
-        practiceHistory.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = `history-item ${item.status}`;
-            
-            itemDiv.innerHTML = `
-                <div class="history-word">${item.word}</div>
-                <div class="history-label">Romaji:</div>
-                <div class="history-value">${item.romaji}</div>
-                <div class="history-label">Tradução:</div>
-                <div class="history-value">${item.meaning}</div>
-            `;
-            
-            historyListContainer.appendChild(itemDiv);
-        });
-    }
-
-
-    // MODIFICADO: Função `handleResult` para chamar a adição ao histórico
-    function handleResult(isCorrect) {
-        isAnswered = true;
-        toggleInputs(true);
-        
-        // CHAMA A FUNÇÃO PARA ADICIONAR AO HISTÓRICO
-        addToHistory(currentWord, isCorrect);
-
-        if (isCorrect) {
-			correctSound.play(); // Toca o som de acerto
-            score++;
-            streak++;
-            feedback.textContent = 'Correto!';
-            feedback.className = 'feedback correct';
-            meaningDisplay.textContent = currentWord.meaning;
-            meaningDisplay.style.visibility = 'visible';
-            updateScore();
-            setTimeout(nextQuestion, 2000);
-        } else {
-			errorSound.play(); // Toca o som de erro
-            streak = 0;
-            const correctAnswerDisplay = mode === 'hiragana-to-romaji' ? currentWord.romaji : getDisplayWord(currentWord);
-            feedback.innerHTML = `Incorreto. A resposta era: <strong>${correctAnswerDisplay}</strong>`;
-            feedback.className = 'feedback incorrect';
-            updateScore();
-            checkBtn.textContent = 'Próximo';
-            checkBtn.style.display = 'inline-block';
-            checkBtn.disabled = false;
-        }
-    }
-
-    // --- O restante do seu script.js ---
-    // (Cole o resto do seu script.js aqui, ele não precisa de mais alterações para o histórico funcionar)
-    const optionButtons = document.querySelectorAll('.option-btn');
-    const skipBtn = document.getElementById('skip-btn');
-    const hintBtn = document.getElementById('hint-btn');
-    const feedback = document.getElementById('feedback');
-    const scorePoints = document.getElementById('score-points');
-    const streakCount = document.getElementById('streak-count');
-	const categoryDisplay = document.getElementById('category-display');
-    const modeHiraganaToRomajiBtn = document.getElementById('mode-hiragana-to-romaji');
-    const modeRomajiToHiraganaBtn = document.getElementById('mode-romaji-to-hiragana');
-    const microphoneIcon = document.querySelector('#microphone-btn i');
-    const hiraganaFilter = document.getElementById('hiragana-filter');
-    const katakanaFilter = document.getElementById('katakana-filter');
-    const katakanaRegex = /[\u30A0-\u30FF]/;
-    const hiraganaRegex = /[\u3040-\u309F]/;
-	
-    // ========================================================================
-    // NOVO: LÓGICA PARA MEMORIZAR AS CONFIGURAÇÕES
-    // ========================================================================
-
-    const settings = {
-        practiceHiragana: true,
-        practiceKatakana: true,
-        practiceKanji: true,
-        showFurigana: true
-    };
-    const settingsKey = 'japanesePracticeSettings';
-
-    function saveSettings() {
-        settings.practiceHiragana = hiraganaFilter.checked;
-        settings.practiceKatakana = katakanaFilter.checked;
-        settings.practiceKanji = kanjiModeToggle.checked;
-        settings.showFurigana = furiganaModeToggle.checked;
-		settings.gameMode = mode // Salva o modo atual
-        localStorage.setItem(settingsKey, JSON.stringify(settings));
-    }
-
-    function loadSettings() {
-        const savedSettings = localStorage.getItem(settingsKey);
-        if (savedSettings) {
-            const loaded = JSON.parse(savedSettings);
-            hiraganaFilter.checked = loaded.practiceHiragana;
-            katakanaFilter.checked = loaded.practiceKatakana;
-            kanjiModeToggle.checked = loaded.practiceKanji;
-            furiganaModeToggle.checked = loaded.showFurigana;
-			mode = loaded.gameMode || 'hiragana-to-romaji'; // Define o modo de jogo
-        }
-    }
-
-    // ========================================================================
-    // FIM DA NOVA LÓGICA
-    // ========================================================================
-	
-
-    function isKanjiOnly(wordString) {
-        if (!wordString) return false;
-        return !hiraganaRegex.test(wordString) && !katakanaRegex.test(wordString);
-    }
-
-    function getFilteredVocabulary() {
-        const practiceHiragana = hiraganaFilter.checked;
-        const practiceKatakana = katakanaFilter.checked;
-        const practiceKanji = kanjiModeToggle.checked;
-
-        if (!practiceHiragana && !practiceKatakana && practiceKanji) {
-            return allWords.filter(word => isKanjiOnly(word.kanji));
-        }
-
-        if (!practiceHiragana && !practiceKatakana) {
-            return [];
-        }
-
-        return allWords.filter(word => {
-            const hasKatakana = katakanaRegex.test(word.kana);
-            if (practiceHiragana && practiceKatakana) return true;
-            if (practiceHiragana) return !hasKatakana;
-            if (practiceKatakana) return hasKatakana;
-            return false;
-        });
-    }
-
-    function getRandomWord() {
-        const filteredList = getFilteredVocabulary();
-        if (filteredList.length === 0) {
-            return { error: true, meaning: 'Nenhuma palavra encontrada. Ajuste os filtros.' };
-        }
-        const randomIndex = Math.floor(Math.random() * filteredList.length);
-        return filteredList[randomIndex];
-    }
+    // --- Lógica de Exibição e Interação da UI ---
     
-    function getDisplayWord(word) {
+    function getDisplayWord_(word) {
         if (!kanjiModeToggle.checked || !word.kanji) {
             return word.kana;
         }
@@ -292,7 +148,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    function updateFuriganaVisibility(noTransition=false) {
+	function getDisplayWord(word) {
+		if (!kanjiModeToggle.checked || !word.kanji) {
+			return word.kana;
+		}
+		if (!word.furigana || word.furigana.length === 0) {
+			return word.kanji;
+		}
+
+		const furiganaMap = {};
+		for (const f of word.furigana) {
+			furiganaMap[f.position] = f;
+		}
+
+		let resultHTML = '';
+		let i = 0;
+		const kanjiStr = word.kanji;
+
+		while (i < kanjiStr.length) {
+			if (furiganaMap[i]) {
+				const f = furiganaMap[i];
+				const length = f.length || 1;
+				const textToWrap = kanjiStr.substring(i, i + length);
+				
+				// ========================================================================
+				// AQUI ESTÁ A MUDANÇA PRINCIPAL
+				// ========================================================================
+				// Verifica se o seletor global de furigana está desligado
+				const hideClass = !furiganaModeToggle.checked ? 'hide-furigana' : '';
+
+				// Adiciona a classe 'hide-furigana' diretamente ao <rt> se necessário
+				resultHTML += `<ruby>${textToWrap}<rt class="no-transition ${hideClass}">${f.reading}</rt></ruby>`;
+				// ========================================================================
+
+				i += length;
+			} else {
+				resultHTML += kanjiStr[i];
+				i++;
+			}
+		}
+		return resultHTML;
+	}
+
+    function updateFuriganaVisibility(noTransition = false) {
         const furiganaElements = document.querySelectorAll('rt');
         const showFurigana = furiganaModeToggle.checked;
         furiganaElements.forEach(rt => {
@@ -305,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateFuriganaToggleState(noTransition=false) {
+    function updateFuriganaToggleState(noTransition = false) {
         const kanjiOn = kanjiModeToggle.checked;
         furiganaModeToggle.disabled = !kanjiOn;
         if (noTransition) {
@@ -320,22 +218,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function nextQuestion() {
         isAnswered = false;
-        currentWord = getRandomWord();
+        currentReviewState = { audioUsed: false, hintUsed: false, furiganaRevealed: false }; // Reseta o estado
+
+        // Pede a próxima palavra ao motor SRS, passando os filtros atuais
+        currentWord = SrsEngine.getNextWord({
+            hiragana: hiraganaFilter.checked,
+            katakana: katakanaFilter.checked,
+            kanji: kanjiModeToggle.checked
+        });
+        
         kanjiModeToggle.disabled = false;
+		showFuriganaBtn.disabled = false; // Reabilita o botão para a próxima palavra
+
         if (currentWord.error) {
             questionDisplay.innerHTML = 'Oops!';
             meaningDisplay.textContent = currentWord.meaning;
             meaningDisplay.style.visibility = 'visible';
-			categoryDisplay.textContent = ''; // Limpa a categoria em caso de erro
+            categoryDisplay.textContent = '';
             feedback.textContent = '';
             toggleInputs(true);
             furiganaModeToggle.disabled = !kanjiModeToggle.checked;
             return;
         }
 
-        // NOVO: Exibe a categoria da palavra sorteada
-        categoryDisplay.textContent = `${currentWord.category || 'Geral'}`;
+		updateShowFuriganaButton();
 
+        categoryDisplay.textContent = `${currentWord.category || 'Geral'}`;
         feedback.textContent = '';
         meaningDisplay.style.visibility = 'hidden';
         meaningDisplay.textContent = '';
@@ -347,8 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.querySelectorAll('rt').forEach(rt => { rt.classList.add('no-transition'); });
         updateFuriganaToggleState(true);
+
         const h2rSection = document.getElementById('answer-section-hiragana-to-romaji');
         const r2hSection = document.getElementById('answer-section-romaji-to-hiragana');
+
         if (mode === 'hiragana-to-romaji') {
             questionDisplay.innerHTML = getDisplayWord(currentWord);
             romajiInput.value = '';
@@ -356,20 +266,120 @@ document.addEventListener('DOMContentLoaded', () => {
             h2rSection.classList.remove('hidden');
             r2hSection.classList.add('hidden');
             checkBtn.style.display = 'inline-block';
-			microphoneBtn.style.display = 'inline-block';
-			speakerBtn.style.display = 'inline-block';
+            microphoneBtn.style.display = 'inline-block';
+            speakerBtn.style.display = 'inline-block';
         } else {
             questionDisplay.textContent = currentWord.romaji;
             setupOptions();
             h2rSection.classList.add('hidden');
             r2hSection.classList.remove('hidden');
             checkBtn.style.display = 'none';
-			microphoneBtn.style.display = 'none';
-			speakerBtn.style.display = 'none';
+            microphoneBtn.style.display = 'none';
+            speakerBtn.style.display = 'none';
         }
         updateFuriganaVisibility(true);
     }
+
+    // NOVO: Controla a visibilidade do botão "Furigana"
+    function updateShowFuriganaButton() {
+        // O botão só aparece se: Kanji está LIGADO, Furigana geral está DESLIGADO, e a palavra TEM kanji/furigana
+        const isHardMode = kanjiModeToggle.checked && !furiganaModeToggle.checked && currentWord.furigana;
+        showFuriganaBtn.classList.toggle('visible', isHardMode);
+    }	
     
+    function handleResult(isCorrect) {
+        isAnswered = true;
+        toggleInputs(true);
+
+        // Calcula a dificuldade da sessão com os novos pesos
+        let difficultyScore = 0;
+        if (isCorrect) {
+            // Dica de significado: ajuda pequena
+            if (currentReviewState.hintUsed) difficultyScore += 1;
+            // Áudio: ajuda grande para a leitura
+            if (currentReviewState.audioUsed) difficultyScore += 2;
+
+            // MODIFICADO: Penalidade do Furigana só se aplica se a palavra tiver kanji
+            if (kanjiModeToggle.checked && furiganaModeToggle.checked && currentWord.furigana) {
+                difficultyScore += 1;
+            }
+            // NOVO: Penalidade por revelar o furigana sob demanda
+            if (currentReviewState.furiganaRevealed) {
+                difficultyScore += 2;
+            }
+
+        } else {
+            difficultyScore = 5;
+        }
+        
+        // Informa o motor SRS para atualizar a palavra com a nova dificuldade
+        SrsEngine.updateWord(currentWord, difficultyScore);
+        addToHistory(currentWord, isCorrect);
+        
+        if (isCorrect) {
+            correctSound.play();
+            score++;
+            streak++;
+            feedback.textContent = 'Correto!';
+            feedback.className = 'feedback correct';
+            meaningDisplay.textContent = currentWord.meaning;
+            meaningDisplay.style.visibility = 'visible';
+            updateScore();
+            setTimeout(nextQuestion, 2000);
+        } else {
+            errorSound.play();
+            streak = 0;
+            const correctAnswerDisplay = mode === 'hiragana-to-romaji' ? currentWord.romaji : getDisplayWord(currentWord);
+            feedback.innerHTML = `Incorreto. A resposta era: <strong>${correctAnswerDisplay}</strong>`;
+            feedback.className = 'feedback incorrect';
+            updateScore();
+            checkBtn.textContent = 'Próximo';
+            checkBtn.style.display = 'inline-block';
+            checkBtn.disabled = false;
+        }
+    }
+    
+    function skipQuestion() {
+        errorSound.play();
+        streak = 0;
+        const correctAnswerDisplay = mode === 'hiragana-to-romaji' ? currentWord.romaji : getDisplayWord(currentWord);
+        feedback.innerHTML = `A resposta é: <strong>${correctAnswerDisplay}</strong>`;
+        feedback.className = 'feedback incorrect';
+        showHint();
+        updateScore();
+        isAnswered = true;
+        toggleInputs(true);
+        checkBtn.textContent = 'Próximo';
+        checkBtn.style.display = 'inline-block';
+        checkBtn.disabled = false;
+        addToHistory(currentWord, false);
+        SrsEngine.updateWord(currentWord, 5);
+    }
+    
+    function showHint() {
+        if (currentWord.meaning) {
+            meaningDisplay.textContent = `Dica: ${currentWord.meaning}`;
+            meaningDisplay.style.visibility = 'visible';
+        }
+        currentReviewState.hintUsed = true;
+    }
+
+    function speakJapanese(word, rate = 0.7) {
+        currentReviewState.audioUsed = true;
+        utterance.lang = 'ja-JP';
+        utterance.rate = 0.1;
+        utterance.text = ' ';
+        window.speechSynthesis.speak(utterance);
+        setTimeout(() => {
+            speechSynthesis.cancel();
+        }, 100);
+        setTimeout(() => {
+            utterance.rate = rate;
+            utterance.text = word;
+            window.speechSynthesis.speak(utterance);
+        }, 200);
+    }
+
     function toggleInputs(disabled) {
         romajiInput.disabled = disabled;
         checkBtn.disabled = disabled;
@@ -381,7 +391,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupOptions() {
         let options = [currentWord];
         while (options.length < 4) {
-            let randomOption = getRandomWord();
+            let randomOption = SrsEngine.getNextWord({
+                hiragana: hiraganaFilter.checked,
+                katakana: katakanaFilter.checked,
+                kanji: kanjiModeToggle.checked
+            });
             if (!randomOption.error && !options.some(opt => opt.kana === randomOption.kana)) {
                 options.push(randomOption);
             }
@@ -420,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btn.innerHTML === getDisplayWord(currentWord)) {
                 btn.style.backgroundColor = 'var(--correct-color)';
             } else if (btn.innerHTML === getDisplayWord(selectedOption) && !isCorrect) {
-                 btn.style.backgroundColor = 'var(--incorrect-color)';
+                btn.style.backgroundColor = 'var(--incorrect-color)';
             }
         });
     }
@@ -429,30 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scorePoints.textContent = score;
         streakCount.textContent = streak;
     }
-
-    function skipQuestion() {
-		errorSound.play(); // Toca o som de erro
-        streak = 0;
-        const correctAnswerDisplay = mode === 'hiragana-to-romaji' ? currentWord.romaji : getDisplayWord(currentWord);
-        feedback.innerHTML = `A resposta é: <strong>${correctAnswerDisplay}</strong>`;
-        feedback.className = 'feedback incorrect';
-        showHint();
-        updateScore();
-        isAnswered = true;
-        toggleInputs(true);
-        checkBtn.textContent = 'Próximo';
-        checkBtn.style.display = 'inline-block';
-        checkBtn.disabled = false;
-        // Adiciona ao histórico como erro ao pular
-        addToHistory(currentWord, false);
-    }
-    
-    function showHint() {
-        if (currentWord.meaning) {
-            meaningDisplay.textContent = `Dica: ${currentWord.meaning}`;
-            meaningDisplay.style.visibility = 'visible';
-        }
-    }
     
     function switchMode(newMode) {
         mode = newMode;
@@ -460,137 +450,60 @@ document.addEventListener('DOMContentLoaded', () => {
         streak = 0;
         updateScore();
         if (newMode === 'hiragana-to-romaji') {
-			questionDisplay.classList.remove('romaji');
+            questionDisplay.classList.remove('romaji');
             modeHiraganaToRomajiBtn.classList.add('active');
             modeRomajiToHiraganaBtn.classList.remove('active');
         } else {
-			questionDisplay.classList.add('romaji');
+            questionDisplay.classList.add('romaji');
             modeHiraganaToRomajiBtn.classList.remove('active');
             modeRomajiToHiraganaBtn.classList.add('active');
         }
-		saveSettings();
+		saveGameMode(newMode);
+        //saveSettings();
         nextQuestion();
     }
     
-	function speakJapanese(word, rate=0.7) {
-		utterance.lang = 'ja-JP'; // Define o idioma para japonês
-		utterance.rate = 0.1; // Ajusta a velocidade da fala		
-		
-		// Placeholder to start the buffer
-		utterance.text = 'aaaaa';
-		window.speechSynthesis.speak(utterance);
-
-		setTimeout(function(){
-			// Speak
-			speechSynthesis.cancel(); // Cancela qualquer fala pendente
-		},100);		
-		setTimeout(function(){
-			// Speak
-			utterance.rate = rate;
-			utterance.text = word;
-			window.speechSynthesis.speak(utterance);
-		},200);
-	}	
-	
-	const kanaTable = document.querySelectorAll('.kana-table td');
-	kanaTable.forEach(function(o) {
-		var content = o.innerHTML;
-		if (content!='') content = content.split('<br>')[0];
-		if (content!='') {
-			o.addEventListener('click', function(e) {
-				var content = e.target.innerHTML;
-				if (content!='') content = content.split('<br>')[0];
-				speakJapanese(content+'!!!', 0.5);
-			});
-		}
-	});		
-	
-	function SpeechRecognitionJapanese() {
-		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-		let recognition;
-		console.log(SpeechRecognition);
-		if (SpeechRecognition) {
-			recognition = new SpeechRecognition();
-			recognition.lang = 'ja-JP'; // Reconhecer o idioma japonês
-			recognition.continuous = false; // Apenas uma tentativa por vez
-			recognition.interimResults = false; // Queremos apenas o resultado final
-
-			// Evento chamado quando o reconhecimento começa
-			recognition.onstart = () => {
-				microphoneIcon.classList.add('fa-ear-listen');
-			};
-
-			// Evento chamado quando o reconhecimento termina
-			recognition.onend = () => {
-				microphoneIcon.classList.remove('fa-ear-listen');
-			};
-
-			// Evento chamado em caso de erro
-			recognition.onerror = (event) => {
-				console.log("Erro no reconhecimento de voz:", event.error);
-				microphoneIcon.classList.remove('fa-ear-listen');
-			};
-			
-			recognition.onaudiostart = () => console.log("🎤 Áudio detectado");
-			recognition.onaudioend = () => console.log("🔇 Áudio finalizado");
-			recognition.onsoundstart = () => console.log("🔊 Som detectado");
-			recognition.onsoundend = () => console.log("🔇 Som finalizado");
-			recognition.onspeechstart = () => console.log("🗣 Fala detectada");
-			recognition.onspeechend = () => console.log("🤐 Fala finalizada");
-			recognition.onnomatch = () => console.log("❓ Não entendi o que foi dito");			
-
-			// Evento PRINCIPAL: chamado quando um resultado é obtido
-			recognition.onresult = (event) => {
-				const kanji = currentWord.kanji ?? '';
-				const kana = currentWord.kana;
-				var transcript = event.results[0][0].transcript;
-				transcript = transcript.replace('。','').replace('、','').replace('?','').replace(' ','');
-				console.log(event.results);
-				console.log('transcript', transcript);
-				console.log('kanji', kanji);
-				console.log('kana', kana);
-				const isCorrect = transcript==kanji || transcript==kana;
-				if (isCorrect) {
-					console.log('correto');
-					romajiInput.value = currentWord.romaji;
-					checkBtn.click();
-				}
-			};
-		} else {
-			console.log('erro');
-		}
-		recognition.start();
-	}		
+    const kanaTable = document.querySelectorAll('.kana-table td');
+    kanaTable.forEach(function(o) { /* ... (código existente) ... */ });
+    
+    function SpeechRecognitionJapanese() { /* ... (código existente) ... */ }
+    // Colando para manter completo
+    kanaTable.forEach(function(o){var content=o.innerHTML;if(content!="")content=content.split("<br>")[0];if(content!="")o.addEventListener("click",function(e){var content=e.target.innerHTML;if(content!="")content=content.split("<br>")[0];speakJapanese(content+"!!!",.5)})});SpeechRecognitionJapanese=function(){const recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition);if(recognition){recognition.lang="ja-JP";recognition.continuous=!1;recognition.interimResults=!1;recognition.onstart=()=>{microphoneIcon.classList.add("fa-ear-listen")};recognition.onend=()=>{microphoneIcon.classList.remove("fa-ear-listen")};recognition.onerror=event=>{console.log("Erro no reconhecimento de voz:",event.error);microphoneIcon.classList.remove("fa-ear-listen")};recognition.onresult=event=>{const kanji=currentWord.kanji??"",kana=currentWord.kana;let transcript=event.results[0][0].transcript;transcript=transcript.replace("\u3002","").replace("\u3001","").replace("?","").replace(" ","");if(transcript==kanji||transcript==kana){romajiInput.value=currentWord.romaji;checkBtn.click()}}}else console.log("erro");recognition.start()};
 
     // --- Event Listeners ---
     checkBtn.addEventListener('click', checkAnswer);
     skipBtn.addEventListener('click', skipQuestion);
     hintBtn.addEventListener('click', () => {
-		romajiInput.focus();
-		showHint();
-	});
+        romajiInput.focus();
+        showHint();
+    });
+    showFuriganaBtn.addEventListener('click', () => {
+        // Remove a classe que esconde todos os furiganas (<rt>)
+        document.querySelectorAll('rt').forEach(rt => {
+            rt.classList.remove('hide-furigana');
+        });
+        // Marca que a ajuda foi usada para o SRS
+        currentReviewState.furiganaRevealed = true;
+        // Desabilita o botão para não ser clicado de novo na mesma palavra
+        showFuriganaBtn.disabled = true;
+    });
     romajiInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
     modeHiraganaToRomajiBtn.addEventListener('click', () => switchMode('hiragana-to-romaji'));
     modeRomajiToHiraganaBtn.addEventListener('click', () => switchMode('romaji-to-leitura'));
     speakerBtn.addEventListener('click', () => { speakJapanese(currentWord.kana); });
     microphoneBtn.addEventListener('click', () => { SpeechRecognitionJapanese(); });
-
-    // Listeners para os toggles
-	hiraganaFilter.addEventListener('change', () => { saveSettings(); nextQuestion(); });
-	katakanaFilter.addEventListener('change', () => { saveSettings(); nextQuestion(); });
-    kanjiModeToggle.addEventListener('change', () => { saveSettings(); nextQuestion(); });
-    furiganaModeToggle.addEventListener('change', () => { saveSettings(); updateFuriganaVisibility(); });
+    //hiraganaFilter.addEventListener('change', () => { saveSettings(); nextQuestion(); });
+    //katakanaFilter.addEventListener('change', () => { saveSettings(); nextQuestion(); });
+    //kanjiModeToggle.addEventListener('change', () => { saveSettings(); nextQuestion(); });
+    //furiganaModeToggle.addEventListener('change', () => { saveSettings(); updateFuriganaVisibility(); });
 
     // --- Inicialização ---
-    if (typeof allWords !== 'undefined' && allWords.length > 0) {
-		loadSettings(); // Carrega as configurações salvas
-        loadHistory(); // Carrega o histórico ao iniciar
-        // A função switchMode agora é chamada com o modo que foi carregado do localStorage
-        // e apenas ajusta a UI e busca a primeira palavra.
-        switchMode(mode);
+    if (typeof vocabulary !== 'undefined' && vocabulary) {
+        SrsEngine.init(vocabulary); // Inicializa o motor SRS com o vocabulário
+        //loadSettings();
+        loadHistory();
+        switchMode(getGameMode()); // Usa a função de config.js
     } else {
         questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
     }
-
 });
-

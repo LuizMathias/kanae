@@ -14,7 +14,7 @@ const vocabulary_test = [
 		1: { 
 			title: 'Pessoas e Família', 
 			words: [
-				{ kana: 'なまえ', kanji: '名前', furigana: [{ position: 0, reading: 'な' }, { position: 1, reading: 'まえ' }], romaji: 'namae', meaning: 'Nome' },
+				{ kana: 'なまえ', kanji: '名前', furigana: [{ position: 0, reading: 'なまえ', length: 2 }], romaji: 'namae', meaning: 'Nome' },
 				{ kana: 'わたし', kanji: '私', furigana: [{ position: 0, reading: 'わたし' }], romaji: 'watashi', meaning: 'Eu' },
 			]
 		}
@@ -56,20 +56,20 @@ const vocabulary = [
     { kana: 'どういたしまして', kanji: null, furigana: null, romaji: 'dou itashimashite', meaning: 'De nada' },
 
     // === Pessoas e Família ===
-    { kana: 'なまえ', kanji: '名前', furigana: [{ position: 0, reading: 'な' }, { position: 1, reading: 'まえ' }], romaji: 'namae', meaning: 'Nome' },
+    { kana: 'なまえ', kanji: '名前', furigana: [{ position: 0, reading: 'なまえ', length: 2 }], romaji: 'namae', meaning: 'Nome' },
     { kana: 'わたし', kanji: '私', furigana: [{ position: 0, reading: 'わたし' }], romaji: 'watashi', meaning: 'Eu' },
     { kana: 'ぼく', kanji: '僕', furigana: [{ position: 0, reading: 'ぼく' }], romaji: 'boku', meaning: 'Eu (masculino, informal)' },
     { kana: 'あなた', kanji: '貴方', furigana: [{ position: 0, reading: 'あな' }, { position: 1, reading: 'た' }], romaji: 'anata', meaning: 'Você' },
     { kana: 'かれ', kanji: '彼', furigana: [{ position: 0, reading: 'かれ' }], romaji: 'kare', meaning: 'Ele / Namorado' },
-    { kana: 'かのじょ', kanji: '彼女', furigana: [{ position: 0, reading: 'かの' }, { position: 1, reading: 'じょ' }], romaji: 'kanojo', meaning: 'Ela / Namorada' },
+    { kana: 'かのじょ', kanji: '彼女', furigana: [{ position: 0, reading: 'かのじょ', length: 2 }], romaji: 'kanojo', meaning: 'Ela / Namorada' },
     { kana: 'ひと', kanji: '人', furigana: [{ position: 0, reading: 'ひと' }], romaji: 'hito', meaning: 'Pessoa' },
-    { kana: 'ともだち', kanji: '友達', furigana: [{ position: 0, reading: 'とも' }, { position: 1, reading: 'だち' }], romaji: 'tomodachi', meaning: 'Amigo(a)' },
-    { kana: 'かぞく', kanji: '家族', furigana: [{ position: 0, reading: 'か' }, { position: 1, reading: 'ぞく' }], romaji: 'kazoku', meaning: 'Família' },
+    { kana: 'ともだち', kanji: '友達', furigana: [{ position: 0, reading: 'ともだち', length: 2 }], romaji: 'tomodachi', meaning: 'Amigo(a)' },
+    { kana: 'かぞく', kanji: '家族', furigana: [{ position: 0, reading: 'かぞく', length: 2 }], romaji: 'kazoku', meaning: 'Família' },
     { kana: 'おとうさん', kanji: 'お父さん', furigana: [{ position: 1, reading: 'とう' }], romaji: 'otousan', meaning: 'Pai (de outra pessoa ou formal)' },
     { kana: 'ちち', kanji: '父', furigana: [{ position: 0, reading: 'ちち' }], romaji: 'chichi', meaning: 'Meu pai' },
     { kana: 'おかあさん', kanji: 'お母さん', furigana: [{ position: 1, reading: 'かあ' }], romaji: 'okaasan', meaning: 'Mãe (de outra pessoa ou formal)' },
     { kana: 'はは', kanji: '母', furigana: [{ position: 0, reading: 'はは' }], romaji: 'haha', meaning: 'Minha mãe' },
-    { kana: 'こども', kanji: '子供', furigana: [{ position: 0, reading: 'こ' }, { position: 1, reading: 'ども' }], romaji: 'kodomo', meaning: 'Criança / Filho(a)' },
+    { kana: 'こども', kanji: '子供', furigana: [{ position: 0, reading: 'こども', length: 2 }], romaji: 'kodomo', meaning: 'Criança / Filho(a)' },
     { kana: 'おとこのひと', kanji: '男の人', furigana: [{ position: 0, reading: 'おとこ' }, { position: 2, reading: 'ひと' }], romaji: 'otoko no hito', meaning: 'Homem' },
     { kana: 'おんなのひと', kanji: '女の人', furigana: [{ position: 0, reading: 'おんな' }, { position: 2, reading: 'ひと' }], romaji: 'onna no hito', meaning: 'Mulher' },
     { kana: 'おとこのこ', kanji: '男の子', furigana: [{ position: 0, reading: 'おとこ' }, { position: 2, reading: 'こ' }], romaji: 'otokonoko', meaning: 'Menino' },
