@@ -506,7 +506,7 @@ const animals = [
     { kana: 'かえる', kanji: '蛙', furigana: [{ position: 0, reading: 'かえる' }], romaji: 'kaeru', meaning: 'Sapo / Rã' },
     { kana: 'むし', kanji: '虫', furigana: [{ position: 0, reading: 'むし' }], romaji: 'mushi', meaning: 'Inseto' },
     { kana: 'か', kanji: '蚊', furigana: [{ position: 0, reading: 'か' }], romaji: 'ka', meaning: 'Mosquito / Pernilongo' },
-    { kana: 'くも', kanji: '蜘蛛', furigana: [{ position: 0, reading: 'くも' }], romaji: 'kumo', meaning: 'Aranha' },
+    { kana: 'くも', kanji: '蜘蛛', furigana: [{ position: 0, reading: 'くも', length: 2 }], romaji: 'kumo', meaning: 'Aranha' },
     { kana: 'ぞう', kanji: '象', furigana: [{ position: 0, reading: 'ぞう' }], romaji: 'zou', meaning: 'Elefante' },
     { kana: 'キリン', kanji: null, furigana: null, romaji: 'kirin', meaning: 'Girafa' },
     { kana: 'パンダ', kanji: null, furigana: null, romaji: 'panda', meaning: 'Panda' },

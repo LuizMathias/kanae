@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const kanjiModeToggle = document.getElementById('kanji-mode-toggle');
     const furiganaModeToggle = document.getElementById('furigana-mode-toggle');
 
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const closeWelcomeBtn = document.getElementById('close-welcome-btn');	
+
     // --- Funções de Lógica ---
 
     /**
@@ -133,10 +136,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (app && typeof app.updateFuriganaVisibility === 'function') app.updateFuriganaVisibility();
     });
 
+    closeWelcomeBtn.addEventListener('click', () => {
+        welcomeScreen.classList.add('hidden');
+        // Marca no localStorage que o usuário já viu a tela
+        localStorage.setItem('kanaeHasSeenWelcome', 'true');
+    });
+
+    // --- LÓGICA PARA MOSTRAR A TELA ---
+    function handleWelcomeScreen() {
+        const hasSeenWelcome = localStorage.getItem('kanaeHasSeenWelcome');
+        if (!hasSeenWelcome) {
+            welcomeScreen.classList.remove('hidden');
+        }
+    }	
+
 
     // --- Inicialização ---
     loadSettings();
     applySettings();
+	handleWelcomeScreen();
 });
 
 /**
