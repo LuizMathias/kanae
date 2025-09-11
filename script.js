@@ -500,14 +500,21 @@ document.addEventListener('DOMContentLoaded', () => {
     //furiganaModeToggle.addEventListener('change', () => { saveSettings(); updateFuriganaVisibility(); });
 
     // --- Inicialização ---
-    if (typeof vocabulary !== 'undefined' && vocabulary) {
-        SrsEngine.init(vocabulary); // Inicializa o motor SRS com o vocabulário
-        //loadSettings();
-        loadHistory();
-        switchMode(getGameMode()); // Usa a função de config.js
-    } else {
-        questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
-    }
+	const loadingOverlay = document.getElementById('loading-overlay');
+	loadingOverlay.classList.remove('hidden'); // Mostra o indicador de carregamento
+    setTimeout(() => {
+        if (typeof vocabulary !== 'undefined' && vocabulary) {
+            SrsEngine.init(vocabulary);
+            loadHistory();
+            switchMode(getGameMode());
+        } else {
+            questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
+        }
+        
+        // Esconde o indicador de carregamento quando tudo estiver pronto
+        loadingOverlay.classList.add('hidden');
+    }, 100); // 100ms é um bom tempo para garantir que a UI seja desenhada
+    // ========================================================================
 
     app.nextQuestion = nextQuestion;
     app.updateFuriganaVisibility = updateFuriganaVisibility;	

@@ -135,8 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Inicialização ---
-    //loadSettings();
-    //applySettings();
+    loadSettings();
+    applySettings();
 });
 
 /**
