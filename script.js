@@ -1,4 +1,6 @@
 // script.js
+const app = {}; // Nosso objeto global para comunicação
+
 var utterance = new SpeechSynthesisUtterance();
 let practiceHistory = [];
 let historyListContainer;
@@ -506,4 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         questionDisplay.textContent = "Erro: Vocabulário não encontrado.";
     }
+
+    app.nextQuestion = nextQuestion;
+    app.updateFuriganaVisibility = updateFuriganaVisibility;	
 });

@@ -112,25 +112,25 @@ document.addEventListener('DOMContentLoaded', () => {
     hiraganaFilter.addEventListener('change', () => {
         currentSettings.practiceHiragana = hiraganaFilter.checked;
         saveSettings();
-        if (typeof nextQuestion === 'function') nextQuestion();
+        if (app && typeof app.nextQuestion === 'function') app.nextQuestion();
     });
 
     katakanaFilter.addEventListener('change', () => {
         currentSettings.practiceKatakana = katakanaFilter.checked;
         saveSettings();
-        if (typeof nextQuestion === 'function') nextQuestion();
+        if (app && typeof app.nextQuestion === 'function') app.nextQuestion();
     });
 
     kanjiModeToggle.addEventListener('change', () => {
         currentSettings.practiceKanji = kanjiModeToggle.checked;
         saveSettings();
-        if (typeof nextQuestion === 'function') nextQuestion();
+        if (app && typeof app.nextQuestion === 'function') app.nextQuestion();
     });
 
     furiganaModeToggle.addEventListener('change', () => {
         currentSettings.showFurigana = furiganaModeToggle.checked;
         saveSettings();
-        if (typeof updateFuriganaVisibility === 'function') updateFuriganaVisibility();
+        if (app && typeof app.updateFuriganaVisibility === 'function') app.updateFuriganaVisibility();
     });
 
 
