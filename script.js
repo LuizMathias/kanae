@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const kanjiModeToggle = document.getElementById('kanji-mode-toggle');
     const furiganaModeToggle = document.getElementById('furigana-mode-toggle');
 	const showFuriganaBtn = document.getElementById('show-furigana-btn');
+	const practicePageTitle = document.getElementById('practice-page-title');
+
     historyListContainer = document.getElementById('history-list-container');
     
     // --- Lógica de Configurações e Histórico ---
@@ -452,10 +454,12 @@ document.addEventListener('DOMContentLoaded', () => {
         streak = 0;
         updateScore();
         if (newMode === 'hiragana-to-romaji') {
+			practicePageTitle.textContent = 'Treino | Leitura → Romaji';
             questionDisplay.classList.remove('romaji');
             modeHiraganaToRomajiBtn.classList.add('active');
             modeRomajiToHiraganaBtn.classList.remove('active');
         } else {
+			practicePageTitle.textContent = 'Treino | Romaji → Leitura';
             questionDisplay.classList.add('romaji');
             modeHiraganaToRomajiBtn.classList.remove('active');
             modeRomajiToHiraganaBtn.classList.add('active');
@@ -490,8 +494,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showFuriganaBtn.disabled = true;
     });
     romajiInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
-    modeHiraganaToRomajiBtn.addEventListener('click', () => switchMode('hiragana-to-romaji'));
-    modeRomajiToHiraganaBtn.addEventListener('click', () => switchMode('romaji-to-leitura'));
+    modeHiraganaToRomajiBtn.addEventListener('click', () => { switchMode('hiragana-to-romaji'); app.showPage('practice-page'); });
+    modeRomajiToHiraganaBtn.addEventListener('click', () => { switchMode('romaji-to-leitura'); app.showPage('practice-page'); });
     speakerBtn.addEventListener('click', () => { speakJapanese(currentWord.kana); });
     microphoneBtn.addEventListener('click', () => { SpeechRecognitionJapanese(); });
     //hiraganaFilter.addEventListener('change', () => { saveSettings(); nextQuestion(); });

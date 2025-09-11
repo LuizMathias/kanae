@@ -522,8 +522,8 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
     text-align: center;
     font-size: 1.5rem;
     font-weight: 500;
-    padding: 10px 0;
-    margin-bottom: 15px;
+    /*padding: 10px 0;*/
+    margin-bottom: 10px;
     color: var(--dark-color);
 }
 .page-header h1, .page-header h2 {
@@ -543,13 +543,13 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
 .home-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 .home-card {
     background-color: var(--light-color);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 20px;
+    padding: 20px 0px;
     text-align: center;
 }
 .home-card h2 { margin-bottom: 10px; color: var(--primary-color); }
@@ -564,6 +564,19 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
     border: none;
     font-size: 1rem;
     cursor: pointer;
+}
+
+.shortcuts-card {
+	padding: 10px 10px;
+}
+
+.shortcuts-card h3 {
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+.shortcuts-card .menu-item {
+    padding: 5px 20px;
 }
 
 /* --- ESTILOS DA BARRA DE NAVEGAÇÃO INFERIOR --- */
@@ -583,6 +596,7 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
 }
 
 .nav-button {
+	width: 25%;
     background: none;
     border: none;
     cursor: pointer;
@@ -626,7 +640,7 @@ body.dark-mode .home-card p { color: #aaa; }
     border: 1px solid var(--border-color);
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 20px; /* Adiciona um espaço abaixo dos botões */
+    margin-bottom: 10px; /* Adiciona um espaço abaixo dos botões */
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
@@ -655,4 +669,83 @@ body.dark-mode .mode-selection {
 }
 body.dark-mode .mode-btn {
     color: var(--text-color);
+}
+
+
+/* Novo Cabeçalho da Home */
+.home-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+.home-logo {
+    width: 40px;
+    height: 40px;
+}
+.home-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+.dashboard {
+    display: grid;
+    /* Agora o gráfico ocupa 1 fração de espaço e a grade de stats ocupa 1.2 frações */
+    grid-template-columns: 1fr 1.2fr;
+    gap: 15px;
+    align-items: center; /* Alinha verticalmente */
+}
+
+/* Card que contém o gráfico */
+.chart-card {
+    position: relative;
+    padding: 10px !important;
+    height: 160px; /* Altura fixa para o card do gráfico */
+    padding-bottom: 26px !important;	
+}
+
+/* Grade para os cards menores */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Três colunas */
+    gap: 10px;
+}
+
+/* Estilo para os cards de números menores */
+.small-stat .stat-value {
+    font-size: 1.8rem; /* Fonte menor para os números */
+}
+
+.small-stat .stat-label {
+    font-size: 0.8rem; /* Fonte menor para o label */
+}
+
+.stat-card {
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Para telas menores, colocar os cards em uma única coluna */
+@media (max-width: 400px) {
+    .dashboard {
+        grid-template-columns: 1fr; /* Uma coluna */
+    }
 }

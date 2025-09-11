@@ -34,7 +34,10 @@
     <div class="page-container">
         <!-- ======================= PÁGINA HOME ======================= -->
         <div id="home-page" class="page active">
-            <div class="page-header"><h1>Início</h1></div>
+			<div class="home-header">
+				<img src="favicon.png" alt="Kanae Logo" class="home-logo">
+				<h1>Kanae</h1>
+			</div>
 
 			<div class="mode-selection">
 				<button id="mode-hiragana-to-romaji" class="mode-btn active">Leitura → Romaji</button>
@@ -42,19 +45,46 @@
 			</div>
 
             <div class="page-content home-grid">
+
+				<div class="dashboard">
+					<!-- Card de Precisão (agora com um gráfico) -->
+					<div class="stat-card chart-card">
+						<canvas id="accuracy-chart"></canvas>
+						<p class="stat-label">Precisão Recente</p>
+					</div>
+
+					<!-- Outras estatísticas em cards menores -->
+					<div class="stats-grid">
+						<div class="stat-card small-stat">
+							<span id="stat-learned" class="stat-value">0</span>
+							<p class="stat-label">Aprendidas</p>
+						</div>
+						<div class="stat-card small-stat">
+							<span id="stat-review" class="stat-value">0</span>
+							<p class="stat-label">Revisões</p>
+						</div>
+						<div class="stat-card small-stat">
+							<span id="stat-streak" class="stat-value">0</span>
+							<p class="stat-label">Sequência</p>
+						</div>
+					</div>
+				</div>
+
                 <div class="home-card">
                     <h2>Começar a Praticar</h2>
                     <p>Continue de onde parou com o sistema SRS.</p>
                     <button class="nav-button-link" data-target="practice-page">Ir para o Treino</button>
                 </div>
-                <div class="home-card">
+                <div class="home-card shortcuts-card">
                     <h3>Atalhos</h3>
+					<!--
                     <button class="menu-item nav-button-link" data-target="hiragana-page">
                         <span style="font-size: 20px; font-weight: bold; width: 24px;">あ</span> Tabela Hiragana
                     </button>
                     <button class="menu-item nav-button-link" data-target="katakana-page">
                         <span style="font-size: 20px; font-weight: bold; width: 24px;">ア</span> Tabela Katakana
                     </button>
+					-->
                     <button class="menu-item nav-button-link" data-target="history-page">
                         <span class="material-symbols-outlined">history</span> Histórico
                     </button>
@@ -64,7 +94,7 @@
 
         <!-- ======================= PÁGINA DE TREINO ======================= -->
         <main id="practice-page" class="page practice-area">
-            <div class="page-header"><h1>Treino</h1></div>
+            <div class="page-header"><h1 id="practice-page-title">Treino</h1></div>
             <div class="scoreboard">
                 <span>Pontos: <strong id="score-points">0</strong></span>
                 <span>Sequência: <strong id="streak-count">0</strong></span>
@@ -288,11 +318,14 @@
         </button>
     </nav>
     
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Seus scripts -->
     <script src="vocabulary2.js?v3"></script>
 	<script src="srs-engine.js?v3"></script>
 	<script src="config.js?v4"></script>
     <script src="script.js?v4"></script>
+	<script src="dashboard.js"></script>
     <script src="ui-manager.js?v3"></script> 
 </body>
 </html>
