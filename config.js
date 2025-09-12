@@ -155,6 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     applySettings();
 	handleWelcomeScreen();
+
+	console.log('Configurações carregadas:', currentSettings);
+	console.log('Storage estimate:', navigator.storage.estimate());
 });
 
 /**
@@ -192,4 +195,25 @@ function getGameMode() {
         return settings.gameMode || 'hiragana-to-romaji';
     }
     return 'hiragana-to-romaji'; // Padrão
+}
+
+/**
+ * Salva o placar e a sequência do jogo no localStorage.
+ * @param {object} stats - Um objeto contendo { score, streak }.
+ */
+function saveGameStats(stats) {
+    localStorage.setItem('kanaeGameStats', JSON.stringify(stats));
+}
+
+/**
+ * Carrega o placar e a sequência do jogo do localStorage.
+ * @returns {object} Um objeto com { score, streak } ou os valores padrão.
+ */
+function loadGameStats() {
+    const savedStats = localStorage.getItem('kanaeGameStats');
+    if (savedStats) {
+        return JSON.parse(savedStats);
+    }
+    // Retorna os valores padrão se nada for encontrado
+    return { score: 0, streak: 0 };
 }

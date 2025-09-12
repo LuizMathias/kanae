@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const accuracy = (recentHistory.length === 0) ? 0 : Math.round((correctCount / recentHistory.length) * 100);
 
         // --- 3. Obter Sequência ---
-        const streakCount = document.getElementById('streak-count')?.textContent || 0;
+		const savedStats = loadGameStats(); // Usamos a função de config.js
+		const streakCount = savedStats.streak;		
 
         // --- 4. Atualizar o HTML e o Gráfico ---
         statLearnedEl.textContent = learnedWords;

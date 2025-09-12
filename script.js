@@ -41,8 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Variáveis Globais de Estado da UI ---
     let currentWord = {};
-    let score = 0;
-    let streak = 0;
+
+	let { score, streak } = loadGameStats();
+
     let mode = 'hiragana-to-romaji';
     let isAnswered = false;    
     let currentReviewState = {}; // Rastreia ajudas (dica, áudio)
@@ -79,6 +80,69 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Lógica de Configurações e Histórico ---
     const settingsKey = 'japanesePracticeSettings';
+
+    /**
+     * Calcula os pontos para uma palavra acertada com base na dificuldade e nas ajudas usadas.
+     * @param {object} word - O objeto da palavra atual.
+     * @param {object} helpState - O objeto com as flags de ajuda (hintUsed, etc.).
+     * @returns {number} A quantidade de pontos ganhos.
+     */
+    function calculatePoints(word, helpState) {
+        // 1. Calcular Pontos Base
+        let basePoints = 5; // Ponto de partida
+        basePoints += Math.floor(word.kana.length / 2); // Bônus por comprimento
+        if (word.kanji) {
+            basePoints += 5; // Bônus por Kanji
+        }
+
+        // 2. Calcular Penalidades por Ajuda
+        let penaltyMultiplier = 0;
+        if (helpState.hintUsed) penaltyMultiplier += 0.40;
+        if (helpState.audioUsed) penaltyMultiplier += 0.30;
+        if (helpState.furiganaRevealed) penaltyMultiplier += 0.60;
+
+        let finalPoints = basePoints - (basePoints * penaltyMultiplier);
+
+        // 3. Adicionar Bônus de Sequência (a cada 5 acertos)
+        if (streak > 0 && streak % 5 === 0) {
+            finalPoints += 10; // Bônus de 10 pontos
+        }
+
+        // 4. Garantir que a pontuação mínima seja 1 e arredondar
+        return Math.max(1, Math.round(finalPoints));
+    }
+
+	/**
+	 * Anima a contagem de um número em um elemento HTML.
+	 * @param {HTMLElement} element - O elemento a ser animado (ex: scorePoints).
+	 * @param {number} start - O número inicial.
+	 * @param {number} end - O número final.
+	 * @param {number} duration - A duração da animação em milissegundos.
+	 */
+	function animateCounter(element, start, end, duration) {
+		let startTime = null;
+
+		// A função que executa a cada frame da animação
+		const step = (currentTime) => {
+			if (!startTime) startTime = currentTime;
+			const progress = Math.min((currentTime - startTime) / duration, 1); // Calcula o progresso (de 0 a 1)
+
+			// Calcula o número a ser exibido no frame atual
+			const currentValue = Math.floor(progress * (end - start) + start);
+			element.textContent = currentValue;
+
+			// Continua a animação até o final
+			if (progress < 1) {
+				requestAnimationFrame(step);
+			} else {
+				// Garante que o valor final seja exato
+				element.textContent = end;
+			}
+		};
+
+		// Inicia a animação
+		requestAnimationFrame(step);
+	}	
 
     function saveSettings_old() {
         const settings = {
@@ -322,13 +386,33 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isCorrect) {
             correctSound.play();
-            score++;
+
+			const pointsGained = calculatePoints(currentWord, currentReviewState);
+			const previousScore = score; // Guarda o placar antigo
+            score += pointsGained;
             streak++;
-            feedback.textContent = 'Correto!';
+
+			feedback.textContent = 'Correto!';
             feedback.className = 'feedback correct';
             meaningDisplay.textContent = currentWord.meaning;
             meaningDisplay.style.visibility = 'visible';
-            updateScore();
+
+			// 1. Anima o contador do placar
+			animateCounter(scorePoints, previousScore, score, 500); // Anima por 500ms
+
+			// 2. Aciona o efeito "pop"
+			scorePoints.classList.add('score-updated');
+			
+			// 3. Remove a classe do efeito após a animação para que possa ser usada novamente
+			setTimeout(() => {
+				scorePoints.classList.remove('score-updated');
+			}, 200); // 200ms é a duração da transição no CSS
+
+			// 4. Atualiza a sequência e SALVA o progresso
+			streakCount.textContent = streak;
+
+			updateScore(); // Atualiza e salva o placar (com a nova sequência)
+
             setTimeout(nextQuestion, 2000);
         } else {
             errorSound.play();
@@ -345,12 +429,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function skipQuestion() {
         errorSound.play();
-        streak = 0;
+        streak = 0; // Zera a sequência
         const correctAnswerDisplay = mode === 'hiragana-to-romaji' ? currentWord.romaji : getDisplayWord(currentWord);
         feedback.innerHTML = `A resposta é: <strong>${correctAnswerDisplay}</strong>`;
         feedback.className = 'feedback incorrect';
         showHint();
-        updateScore();
+        updateScore(); // Atualiza e salva o placar (com a sequência zerada)
         isAnswered = true;
         toggleInputs(true);
         checkBtn.textContent = 'Próximo';
@@ -446,12 +530,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateScore() {
         scorePoints.textContent = score;
         streakCount.textContent = streak;
+		saveGameStats({ score, streak });
     }
     
     function switchMode(newMode) {
         mode = newMode;
-        score = 0;
-        streak = 0;
         updateScore();
         if (newMode === 'hiragana-to-romaji') {
 			practicePageTitle.textContent = 'Treino | Leitura → Romaji';
@@ -503,6 +586,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //kanjiModeToggle.addEventListener('change', () => { saveSettings(); nextQuestion(); });
     //furiganaModeToggle.addEventListener('change', () => { saveSettings(); updateFuriganaVisibility(); });
 
+	scorePoints.addEventListener('transitionend', () => {
+		scorePoints.classList.remove('score-updated');
+	});	
+
     // --- Inicialização ---
 	const loadingOverlay = document.getElementById('loading-overlay');
 	loadingOverlay.classList.remove('hidden'); // Mostra o indicador de carregamento
@@ -510,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof vocabulary !== 'undefined' && vocabulary) {
             SrsEngine.init(vocabulary);
             loadHistory();
+			updateScore();
             switchMode(getGameMode());
         } else {
             questionDisplay.textContent = "Erro: Vocabulário não encontrado.";

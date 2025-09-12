@@ -177,8 +177,8 @@ input:disabled~.switch-text{
 }
 
 .question.romaji {
-	font-size:3.5rem;
-	line-height: 1;
+	font-size:3rem;
+	line-height: 1.1;
 }
 
 rt{
@@ -251,10 +251,11 @@ rt.hide-furigana{
 }
 
 .feedback{
-	margin-top:15px;
+	margin-top:10px;
 	font-size:1.2rem;
 	font-weight:500;
-	min-height:25px
+	min-height:25px;
+	text-align:center;
 }
 
 .feedback rt{
@@ -277,7 +278,8 @@ rt.hide-furigana{
 }
 
 .action-buttons button{
-	padding:12px 25px;
+    width: 23%;
+    padding: 12px 5px;
 	font-size:16px;
 	border:none;
 	border-radius:8px;
@@ -576,7 +578,8 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
 }
 
 .shortcuts-card .menu-item {
-    padding: 5px 20px;
+    padding: 5px 10px;
+	width: 40%;
 }
 
 /* --- ESTILOS DA BARRA DE NAVEGAÇÃO INFERIOR --- */
@@ -694,7 +697,7 @@ body.dark-mode .mode-btn {
     display: grid;
     /* Agora o gráfico ocupa 1 fração de espaço e a grade de stats ocupa 1.2 frações */
     grid-template-columns: 1fr 1.2fr;
-    gap: 15px;
+    gap: 10px;
     align-items: center; /* Alinha verticalmente */
 }
 
@@ -748,4 +751,12 @@ body.dark-mode .mode-btn {
     .dashboard {
         grid-template-columns: 1fr; /* Uma coluna */
     }
+}
+
+#score-points {
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+#score-points.score-updated {
+	transform: scale(1.3); /* Aumenta o tamanho */
+	color: var(--correct-color); /* Muda a cor para verde */
 }
