@@ -131,6 +131,25 @@
 
 			<p id="feedback" class="feedback"></p>
 
+            <!-- Container do Jogo Kanae Quest -->
+			<div id="kanae-quest-container">
+				<!-- O canvas continua aqui, mas ficará escondido no início -->
+				<canvas id="game-canvas" style="display: none;"></canvas>
+
+				<!-- NOVO: Placeholder clicável -->
+				<div id="game-placeholder">
+					<div class="placeholder-content">
+						<h3>Kanae Quest</h3>
+						<button id="start-game-btn">▶ Iniciar Jogo</button>
+					</div>
+				</div>
+
+				<!-- NOVO: Indicador de carregamento -->
+				<div id="game-loader" style="display: none;">
+					<div class="spinner"></div>
+					<p>Carregando Jogo...</p>
+				</div>
+			</div>
 
         </main>
 
@@ -320,8 +339,6 @@
         </button>
     </nav>
     
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- Seus scripts -->
     <script src="vocabulary2.js?v3"></script>
 	<script src="srs-engine.js?v3"></script>

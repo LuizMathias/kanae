@@ -48,6 +48,52 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAnswered = false;    
     let currentReviewState = {}; // Rastreia ajudas (dica, áudio)
 
+    // Criamos um objeto "placeholder" para o jogo.
+    // As funções não fazem nada, apenas evitam erros se forem chamadas antes do jogo carregar.
+    let KanaeQuest = {
+        handleCorrectAnswer: () => {},
+        handleIncorrectAnswer: () => {}
+    };
+    // Referências aos novos elementos
+    const gamePlaceholder = document.getElementById('game-placeholder');
+    const gameLoader = document.getElementById('game-loader');
+    const gameCanvas = document.getElementById('game-canvas');
+
+    let isGameLoaded = false;
+	
+	//Adicionamos o listener de clique ao placeholder
+    gamePlaceholder.addEventListener('click', async () => {
+        if (isGameLoaded) return; // Não faz nada se o jogo já carregou
+
+        // Mostra o loader e esconde o botão de "play"
+        gamePlaceholder.style.display = 'none';
+        gameLoader.style.display = 'flex';
+
+        try {
+            // 3. Carrega dinamicamente os scripts em ordem
+            console.log('Carregando Kaboom.js...');
+            await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
+            
+            console.log('Carregando game-engine.js...');
+            const gameModule = await import('./game-engine.js?v'+Date.now());
+            
+            // 4. Substitui nosso objeto placeholder pelo módulo real
+            KanaeQuest = gameModule;
+            
+            // Esconde o loader e mostra o canvas
+            gameLoader.style.display = 'none';
+            gameCanvas.style.display = 'block';
+
+            // 5. Inicializa o jogo!
+            KanaeQuest.initGame();
+            isGameLoaded = true;
+
+        } catch (error) {
+            console.error("Falha ao carregar o jogo:", error);
+            gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
+        }
+    });
+
     // --- Efeitos Sonoros ---
     const correctSound = new Audio('sounds/correct.mp3');
     const errorSound = new Audio('sounds/error.mp3');
@@ -392,6 +438,9 @@ document.addEventListener('DOMContentLoaded', () => {
             score += pointsGained;
             streak++;
 
+			// >>> INTEGRAÇÃO COM O JOGO <<<
+			KanaeQuest.handleCorrectAnswer(currentWord, pointsGained);
+
 			feedback.textContent = 'Correto!';
             feedback.className = 'feedback correct';
             meaningDisplay.textContent = currentWord.meaning;
@@ -424,6 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
             checkBtn.textContent = 'Próximo';
             checkBtn.style.display = 'inline-block';
             checkBtn.disabled = false;
+
+			// >>> INTEGRAÇÃO COM O JOGO <<<
+        	KanaeQuest.handleIncorrectAnswer();
         }
     }
     
