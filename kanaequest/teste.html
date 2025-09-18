@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<link rel="manifest" href="manifest.json">
+  	<meta name="theme-color" content="#3367D6">
+  	<title>Kanae</title>	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+</head>
+<body>
+
+	<button onclick="KanaeQuest.handleCorrectAnswer('teste', 5)">Testar Correct Answer</button>
+	<button onclick="KanaeQuest.handleIncorrectAnswer('teste', 0)">Testar Incorrect Answer</button>
+
+    <div class="page-container">
+
+        <!-- ======================= PÁGINA DE TREINO ======================= -->
+        <main id="practice-page" class="page practice-area">
+
+            <!-- Container do Jogo Kanae Quest -->
+			<div id="kanae-quest-container" style="width: 100%;">
+				<!-- O canvas continua aqui, mas ficará escondido no início -->
+				<canvas id="game-canvas" style="display: none; width:100%;"></canvas>
+
+				<!-- NOVO: Placeholder clicável -->
+				<div id="game-placeholder">
+					<div class="placeholder-content">
+						<h3>Kanae Quest</h3>
+						<button id="start-game-btn">▶ Iniciar Jogo</button>
+					</div>
+				</div>
+
+				<!-- NOVO: Indicador de carregamento -->
+				<div id="game-loader" style="display: none;">
+					<div class="spinner"></div>
+					<p>Carregando Jogo...</p>
+				</div>
+			</div>
+
+        </main>
+
+
+    </div>
+
+	<script>
+
+		// largura real da tela
+		const screenWidth = window.innerWidth
+		const screenHeight = window.innerWidth * 0.6
+		// referência (800px = escala 1)
+		const baseWidth = 800
+
+		// fator de escala proporcional
+		const scaleFactor = screenWidth / baseWidth;		
+
+		let KanaeQuest = {
+			handleCorrectAnswer: () => {},
+			handleIncorrectAnswer: () => {}
+		};
+		// Referências aos novos elementos
+		const gamePlaceholder = document.getElementById('game-placeholder');
+		const gameLoader = document.getElementById('game-loader');
+		const gameCanvas = document.getElementById('game-canvas');
+
+		let isGameLoaded = false;
+		
+		//Adicionamos o listener de clique ao placeholder
+		gamePlaceholder.addEventListener('click', async () => {
+			if (isGameLoaded) return; // Não faz nada se o jogo já carregou
+
+			// Mostra o loader e esconde o botão de "play"
+			gamePlaceholder.style.display = 'none';
+			gameLoader.style.display = 'flex';
+
+			//try {
+				// 3. Carrega dinamicamente os scripts em ordem
+				console.log('Carregando Kaboom.js...');
+				await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
+				
+				console.log('Carregando game-engine.js...');
+				const gameModule = await import('./game-engine.js?v'+Date.now());
+				
+				// 4. Substitui nosso objeto placeholder pelo módulo real
+				KanaeQuest = gameModule;
+				
+				// Esconde o loader e mostra o canvas
+				gameLoader.style.display = 'none';
+				gameCanvas.style.display = 'block';
+
+				// 5. Inicializa o jogo!
+				KanaeQuest.initGame();
+				isGameLoaded = true;
+
+			//} catch (error) {
+			//	console.error("Falha ao carregar o jogo:", error);
+			//	gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
+			//}
+		});
+
+	</script>
+
+</body>
+</html>
