@@ -7,6 +7,7 @@
   	<meta name="theme-color" content="#3367D6">
   	<title>Kanae</title>	
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
 </head>
 <body>
@@ -20,9 +21,9 @@
         <main id="practice-page" class="page practice-area">
 
             <!-- Container do Jogo Kanae Quest -->
-			<div id="kanae-quest-container" style="width: 100%;">
+			<div id="kanae-quest-container" style="width: 500px; height: 400px;">
 				<!-- O canvas continua aqui, mas ficará escondido no início -->
-				<canvas id="game-canvas" style="display: none; width:100%;"></canvas>
+				<canvas id="game-canvas" style="display: none;"></canvas>
 
 				<!-- NOVO: Placeholder clicável -->
 				<div id="game-placeholder">
@@ -45,7 +46,7 @@
     </div>
 
 	<script>
-
+		/*
 		// largura real da tela
 		const screenWidth = window.innerWidth
 		const screenHeight = window.innerWidth * 0.6
@@ -53,8 +54,9 @@
 		const baseWidth = 800
 
 		// fator de escala proporcional
-		const scaleFactor = screenWidth / baseWidth;		
-
+		const scaleFactor = screenWidth / baseWidth;
+		const scaleFactorY = screenHeight / baseWidth;
+		*/
 		let KanaeQuest = {
 			handleCorrectAnswer: () => {},
 			handleIncorrectAnswer: () => {}
@@ -68,16 +70,22 @@
 		
 		//Adicionamos o listener de clique ao placeholder
 		gamePlaceholder.addEventListener('click', async () => {
+			await carregamentoKanaeQuest();
+		});
+
+		async function carregamentoKanaeQuest() {
+
 			if (isGameLoaded) return; // Não faz nada se o jogo já carregou
 
 			// Mostra o loader e esconde o botão de "play"
 			gamePlaceholder.style.display = 'none';
 			gameLoader.style.display = 'flex';
 
-			//try {
+			try {
 				// 3. Carrega dinamicamente os scripts em ordem
 				console.log('Carregando Kaboom.js...');
-				await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
+				//await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
+				await import('https://unpkg.com/kaplay@3001.0.19/dist/kaplay.js');
 				
 				console.log('Carregando game-engine.js...');
 				const gameModule = await import('./game-engine.js?v'+Date.now());
@@ -93,11 +101,15 @@
 				KanaeQuest.initGame();
 				isGameLoaded = true;
 
-			//} catch (error) {
-			//	console.error("Falha ao carregar o jogo:", error);
-			//	gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
-			//}
-		});
+			} catch (error) {
+				console.error("Falha ao carregar o jogo:", error);
+				gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
+			}
+
+		}
+
+		//carregar o jogo automaticamente (sem placeholder)
+		//carregamentoKanaeQuest();
 
 	</script>
 

@@ -44,7 +44,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 48px;
-    height: 48px;
+    height: 36px;
     background-color: transparent;
     border: none;
     border-radius: 50%;
@@ -145,13 +145,14 @@ input:disabled~.switch-text{
 	background-color:#fdfdfd;
 	border:2px solid #eee;
 	border-radius:10px;
-	padding:20px 5px 5px 5px;
-	margin-bottom:10px;
-	min-height:180px;
+	padding: 5px;
+	margin-bottom: 0;
+	min-height:250px;
 	display:flex;
 	flex-direction:column;
-	justify-content:center;
-	align-items:center
+	justify-content: space-between;
+	align-items:center;
+	gap: 5px;
 }
 
 .category-display {
@@ -160,8 +161,6 @@ input:disabled~.switch-text{
 	position: relative;
 	height: 20px;
     line-height: 20px;
-    margin-top: -15px;
-    top: 25px;
 	font-size:1.0rem;
 	font-weight: 500;
 	color: var(--hint-color);
@@ -169,7 +168,7 @@ input:disabled~.switch-text{
 
 .question{
 	font-family:var(--font-jp);
-	font-size:4rem;
+	font-size:3.3rem;
 	font-weight:700;
 	color:var(--dark-color);
 	line-height:1.2;
@@ -195,7 +194,6 @@ rt.hide-furigana{
 .meaning{
 	font-size:1.1rem;
 	color:var(--hint-color);
-	margin-top:10px;
 	font-weight:500;
 	visibility:hidden;
 	height:20px
@@ -218,7 +216,7 @@ rt.hide-furigana{
 
 #romaji-input{
 	width:100%;
-	padding:15px;
+	padding:5px;
 	border:2px solid #ddd;
 	border-radius:10px;
 	font-size:1.2rem;
@@ -234,7 +232,8 @@ rt.hide-furigana{
 .options-grid{
 	display:grid;
 	grid-template-columns:1fr 1fr;
-	gap:10px
+	gap:10px;
+	margin: 10px 0;
 }
 
 .option-btn{
@@ -274,12 +273,12 @@ rt.hide-furigana{
 	display:flex;
 	justify-content:center;
 	gap:15px;
-	margin-top:10px
+	margin-top: 5px;
 }
 
 .action-buttons button{
     width: 23%;
-    padding: 12px 5px;
+    padding: 10px 5px;
 	font-size:16px;
 	border:none;
 	border-radius:8px;
@@ -506,7 +505,8 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
 
 /* --- ESTILOS DO NOVO LAYOUT DE PÁGINAS --- */
 .page-container {
-    width: 100%;
+    /*width: 100%;*/
+	max-width: 450px;
     height: 100%;
 }
 
@@ -584,6 +584,8 @@ body.dark-mode .welcome-content .feature-list { color: #ccc; }
 
 /* --- ESTILOS DA BARRA DE NAVEGAÇÃO INFERIOR --- */
 .bottom-nav {
+	max-width: 450px;
+	margin: auto;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -696,7 +698,7 @@ body.dark-mode .mode-btn {
 .dashboard {
     display: grid;
     /* Agora o gráfico ocupa 1 fração de espaço e a grade de stats ocupa 1.2 frações */
-    grid-template-columns: 1fr 1.2fr;
+    /*grid-template-columns: 1fr 1.2fr;*/
     gap: 10px;
     align-items: center; /* Alinha verticalmente */
 }
@@ -768,15 +770,17 @@ body.dark-mode .mode-btn {
 }
 
 #kanae-quest-container {
-    position: relative; /* Essencial para o posicionamento dos filhos */
-    width: 100%;
+	display: none;;
+    position: absolute; /* Essencial para o posicionamento dos filhos */
+    width: calc(100% - 20px);
     max-width: 450px;
     margin: 0px auto 0 auto;
     border-radius: 10px;
     overflow: hidden;
     line-height: 0;
-    aspect-ratio: 450 / 338; /* Mantém a proporção correta */
+    aspect-ratio: 800 / 500; /* Mantém a proporção correta */
     background-color: #000;
+	z-index: -1;
 }
 
 #game-placeholder {

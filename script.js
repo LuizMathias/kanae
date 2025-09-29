@@ -62,37 +62,45 @@ document.addEventListener('DOMContentLoaded', () => {
     let isGameLoaded = false;
 	
 	//Adicionamos o listener de clique ao placeholder
-    gamePlaceholder.addEventListener('click', async () => {
-        if (isGameLoaded) return; // Não faz nada se o jogo já carregou
+	gamePlaceholder.addEventListener('click', async () => {
+		await carregamentoKanaeQuest();
+	});
 
-        // Mostra o loader e esconde o botão de "play"
-        gamePlaceholder.style.display = 'none';
-        gameLoader.style.display = 'flex';
+	async function carregamentoKanaeQuest() {
 
-        try {
-            // 3. Carrega dinamicamente os scripts em ordem
-            console.log('Carregando Kaboom.js...');
-            await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
-            
-            console.log('Carregando game-engine.js...');
-            const gameModule = await import('./game-engine.js?v'+Date.now());
-            
-            // 4. Substitui nosso objeto placeholder pelo módulo real
-            KanaeQuest = gameModule;
-            
-            // Esconde o loader e mostra o canvas
-            gameLoader.style.display = 'none';
-            gameCanvas.style.display = 'block';
+		if (isGameLoaded) return; // Não faz nada se o jogo já carregou
 
-            // 5. Inicializa o jogo!
-            KanaeQuest.initGame();
-            isGameLoaded = true;
+		// Mostra o loader e esconde o botão de "play"
+		gamePlaceholder.style.display = 'none';
+		gameLoader.style.display = 'flex';
 
-        } catch (error) {
-            console.error("Falha ao carregar o jogo:", error);
-            gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
-        }
-    });
+		try {
+			// 3. Carrega dinamicamente os scripts em ordem
+			console.log('Carregando Kaplay.js...');
+			//await import('https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js');
+			await import('https://unpkg.com/kaplay@3001.0.19/dist/kaplay.js');
+			
+			console.log('Carregando game-engine.js...');
+			const gameModule = await import('./kanaequest/game-engine.js?v'+Date.now());
+			
+			// 4. Substitui nosso objeto placeholder pelo módulo real
+			KanaeQuest = gameModule;
+			
+			// Esconde o loader e mostra o canvas
+			gameLoader.style.display = 'none';
+			gameCanvas.style.display = 'block';
+
+			// 5. Inicializa o jogo!
+			KanaeQuest.initGame();
+			isGameLoaded = true;
+
+		} catch (error) {
+			console.error("Falha ao carregar o jogo:", error);
+			gameLoader.innerHTML = '<p>Erro ao carregar o jogo.</p>';
+		}
+
+	}
+
 
     // --- Efeitos Sonoros ---
     const correctSound = new Audio('sounds/correct.mp3');
@@ -530,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setupOptions() {
         let options = [currentWord];
+		let attempts = 0; // Nosso "disjuntor"
         while (options.length < 4) {
             let randomOption = SrsEngine.getNextWord({
                 hiragana: hiraganaFilter.checked,
@@ -539,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!randomOption.error && !options.some(opt => opt.kana === randomOption.kana)) {
                 options.push(randomOption);
             }
+			if (attempts++ > 20) break; // Evita loop infinito
         }
         const shuffledOptions = shuffleArray(options);
         optionButtons.forEach((button, index) => {
@@ -562,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const userAnswer = romajiInput.value.toLowerCase().trim();
-        const isCorrect = userAnswer === currentWord.romaji;
+        const isCorrect = userAnswer.replaceAll(' ', '') === currentWord.romaji.replaceAll(' ', '');
         handleResult(isCorrect);
     }
 
@@ -609,7 +619,51 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function SpeechRecognitionJapanese() { /* ... (código existente) ... */ }
     // Colando para manter completo
-    kanaTable.forEach(function(o){var content=o.innerHTML;if(content!="")content=content.split("<br>")[0];if(content!="")o.addEventListener("click",function(e){var content=e.target.innerHTML;if(content!="")content=content.split("<br>")[0];speakJapanese(content+"!!!",.5)})});SpeechRecognitionJapanese=function(){const recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition);if(recognition){recognition.lang="ja-JP";recognition.continuous=!1;recognition.interimResults=!1;recognition.onstart=()=>{microphoneIcon.classList.add("fa-ear-listen")};recognition.onend=()=>{microphoneIcon.classList.remove("fa-ear-listen")};recognition.onerror=event=>{console.log("Erro no reconhecimento de voz:",event.error);microphoneIcon.classList.remove("fa-ear-listen")};recognition.onresult=event=>{const kanji=currentWord.kanji??"",kana=currentWord.kana;let transcript=event.results[0][0].transcript;transcript=transcript.replace("\u3002","").replace("\u3001","").replace("?","").replace(" ","");if(transcript==kanji||transcript==kana){romajiInput.value=currentWord.romaji;checkBtn.click()}}}else console.log("erro");recognition.start()};
+
+    kanaTable.forEach(function(o){
+		var content = o.innerHTML;
+		if(content!="") content=content.split("<br>")[0];
+		if(content!="") o.addEventListener("click",function(e){
+			var content=e.target.innerHTML;
+			if(content!="") content=content.split("<br>")[0];
+			speakJapanese(content+"!!!",.5)
+		})
+	});
+
+	SpeechRecognitionJapanese = function(){
+		const recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition);
+		if(recognition){
+			recognition.lang="ja-JP";
+			recognition.continuous=!1;
+			recognition.interimResults=!1;
+			recognition.onstart=()=>{
+				microphoneIcon.classList.add("fa-ear-listen")
+			};
+			recognition.onend=()=>{
+				microphoneIcon.classList.remove("fa-ear-listen")
+			};
+			recognition.onerror=event=>{
+				console.log("Erro no reconhecimento de voz:",event.error);
+				microphoneIcon.classList.remove("fa-ear-listen")
+			};
+			recognition.onresult=event=>{
+				const kanji=currentWord.kanji??"",kana=currentWord.kana;
+				let transcript=event.results[0][0].transcript;
+
+				feedback.textContent = `Você disse: "${transcript}"`;
+
+				transcript=transcript.replace("\u3002","").replace("\u3001","").replace("?","").replace(" ","");
+
+				feedback.textContent+=` ("${transcript}")`;
+				
+				if(transcript==kanji||transcript==kana) {
+					romajiInput.value=currentWord.romaji;
+					checkBtn.click()
+				}
+			}
+		} else console.log("erro");
+		recognition.start()
+	};
 
     // --- Event Listeners ---
     checkBtn.addEventListener('click', checkAnswer);

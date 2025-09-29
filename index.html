@@ -7,7 +7,7 @@
   	<meta name="theme-color" content="#3367D6">
   	<title>Kanae</title>	
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
     <!-- Tela de Boas-Vindas -->
@@ -92,46 +92,80 @@
             </div>
         </div>
 
+		<style>
+			.kanaequest {
+				padding: 0 !important;
+			}
+			.kanaequest .page-header,
+			.kanaequest .scoreboard,
+			.kanaequest .category-display {
+				display: none;
+			}
+			.kanaequest .card {
+				background-color: black;
+				padding: 5px;
+				border-radius: 0;
+				min-height: 80px;
+				margin: 0;
+				border: 0;
+			}
+			.kanaequest .question {
+				font-size: 30px;
+				margin: 20px 0;
+				color: white;
+				margin: 0;
+			}
+			.kanaequest #answer-section-hiragana-to-romaji {
+				display: flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				width: 45%;
+			}
+			.kanaequest .answer-section input {
+				font-size: 14px !important;
+				padding: 2px !important;
+				border-radius: 2px !important;
+				background-color: black;
+				color: white !important;
+			}
+			.kanaequest .meaning {
+				margin-top: 2px;
+				font-size: 14px;
+			}
+			.kanaequest .icon-button {
+				height: 20px !important;
+				width: 20px !important;
+				display: flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				color: white;
+			}
+			.kanaequest .input-row {
+				width: 100%;
+				background-color: black;
+				gap: 15px;
+				justify-content: space-between;
+			}
+			.kanaequest .action-buttons,
+			.kanaequest .feedback {
+				display: none;
+			}
+
+			.kanaequest #kanae-quest-container {
+				border-radius: 0 0 10px 10px;
+				
+			}
+
+		</style>
         <!-- ======================= PÁGINA DE TREINO ======================= -->
-        <main id="practice-page" class="page practice-area">
+        <main id="practice-page" class="page practice-area kanaequest_off">
             <div class="page-header"><h1 id="practice-page-title">Treino</h1></div>
             <div class="scoreboard">
                 <span>Pontos: <strong id="score-points">0</strong></span>
                 <span>Sequência: <strong id="streak-count">0</strong></span>
             </div>
-			<p id="category-display" class="category-display"></p>
-            <div class="card">
-                <p id="question-display" class="question"></p>
-                <p id="meaning-display" class="meaning"></p>
-            </div>
-            
-            <div class="input-row">
-                <div id="answer-section-hiragana-to-romaji" class="answer-section">
-                    <input type="text" id="romaji-input" placeholder="Digite o Romaji..." autocomplete="off">
-                </div>
-                <button id="microphone-btn" class="icon-button"><span class="material-symbols-outlined">mic</span></button>
-                <button id="speaker-btn" class="icon-button"><span class="material-symbols-outlined">volume_up</span></button>
-            </div>
 
-            <div id="answer-section-romaji-to-hiragana" class="answer-section hidden">
-                <div class="options-grid">
-                    <button class="option-btn"></button>
-                    <button class="option-btn"></button>
-                    <button class="option-btn"></button>
-                    <button class="option-btn"></button>
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button id="check-btn" class="ripple-effect">Verificar</button>
-                <button id="hint-btn" class="ripple-effect">Dica</button>
-				<button id="show-furigana-btn" class="ripple-effect">Furigana</button>
-                <button id="skip-btn" class="ripple-effect">Pular</button>
-            </div>
-
-			<p id="feedback" class="feedback"></p>
-
-            <!-- Container do Jogo Kanae Quest -->
+			<!-- Container do Jogo Kanae Quest -->
 			<div id="kanae-quest-container">
 				<!-- O canvas continua aqui, mas ficará escondido no início -->
 				<canvas id="game-canvas" style="display: none;"></canvas>
@@ -150,6 +184,39 @@
 					<p>Carregando Jogo...</p>
 				</div>
 			</div>
+
+            <div class="card">
+				<p id="category-display" class="category-display"></p>
+                <p id="question-display" class="question"></p>
+                <p id="meaning-display" class="meaning"></p>
+				<div class="input-row">
+					<div id="answer-section-hiragana-to-romaji" class="answer-section">
+						<input type="text" id="romaji-input" placeholder="Digite o Romaji..." autocomplete="off">
+					</div>
+					<button id="microphone-btn" class="icon-button"><span class="material-symbols-outlined">mic</span></button>
+					<button id="speaker-btn" class="icon-button"><span class="material-symbols-outlined">volume_up</span></button>
+					<!--<button id="skip-btn" class="icon-button"><span class="material-symbols-outlined">skip_next</span></button>-->
+				</div>
+            </div>
+            
+
+            <div id="answer-section-romaji-to-hiragana" class="answer-section hidden">
+                <div class="options-grid">
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                    <button class="option-btn"></button>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="check-btn" class="ripple-effect">Verificar</button>
+                <button id="hint-btn" class="ripple-effect">Dica</button>
+				<button id="show-furigana-btn" class="ripple-effect">Furigana</button>
+                <button id="skip-btn" class="ripple-effect">Pular</button>
+            </div>
+
+			<p id="feedback" class="feedback"></p>
 
         </main>
 
@@ -339,6 +406,8 @@
         </button>
     </nav>
     
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Seus scripts -->
     <script src="vocabulary2.js?v3"></script>
 	<script src="srs-engine.js?v3"></script>
